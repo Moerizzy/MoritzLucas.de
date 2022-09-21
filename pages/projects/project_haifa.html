@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- 
+        - GEE Code hinzufügen
+     -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis of Haifa's urban settlement structures</title>
+    <link rel="icon" href="../../img/logo_erde.png">
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="main-content">
+    <main>
+        <section class="container active single_blog" id="impressum">
+            <div class="single-blog-container">
+                <div class="main-title">
+                    <h2>Urban Analysis <span>Haifa</span></h2>
+                    <h3>Analysis of Haifa's urban settlement structures</h3>
+                    by Jan-Lukas Malkus and Moritz Lucas
+                </div>
+                <div class="single-blog-content-con">
+                    <p>
+                        <h2 class="main-heading">Abstract</h2>
+                        <p class="highlight-text">
+                            The final task in the second semester of the module Regional Topics in (Applied) Earth Observation was to classify the urban building structure 
+                            by analysing satellite images. The focus of the analysis was on the classes lower city, middle city and upper city, as well as industry, 
+                            which differed in terms of population structure, buildings, green areas and heights.  
+                            The input were RapidEye and Landsat images from two points in time, one corresponding to the dry season and one to the rainy season, and an SRTM elevation model. 
+                            In addition, the NDVI and GLCM texture parameters were calculated and included in the analysis. The GoogleEarth Engine was used as the analysis platform. 
+                            Subsequently, images were segmented on the RapidEye using the SNIC algorithm, a feature selection was performed and mean and standard deviation were calculated 
+                            for each cluster. Afterwards, the data was classified using the Random Forrest classifier, with 520 manually selected clusters as training data. 
+                            According to a validation carried out following the "Good practice evaluation" of Olofsson et al. (2014) an overall accuracy of 86.8% +- 2.33% could be achieved.
+                        <p>
+                        <figure>
+                            <img src="../../img/project_haifa/haifa_img.jpg">
+                            <figcaption> <strong>Figure 1:</strong> Haifa captured by RapidEye satellites in summer 2015</figcaption>
+                        </figure>
+                        <h2>1. Introduction</h2>
+                            The city of Haifa, located on the Mediterranean coast of Israel, has a special urban structure due to its exposure to the sea and the differences in altitude resulting from the slopes of the Carmel Mountains. Different land uses, types of housing and population groups can be found on the various elevation levels of the city. (Israeli Ministry of Tourism 2008)
+                            
+                            The aim of this study is to find out whether and with what accuracy these - socio-demographically and geographically easily describable - differences can be detected with the help of remote sensing methods. Special emphasis will be placed on the separability of the three different urban levels from each other and from the other classes.
+                            Other studies have used GLCM texture parameters (Tassi/Vizzari 2020), elevation data (Bochow et al. 2010, p. 1798), vegetation indices and thermal data (Mushore et al. 2017). In this study, these will therefore also be used and it will be clarified which explanatory power these inputs provide for the classification. It is expected that due to the large differences in elevation and exposure to the sea within the city, the elevation data, and due to the different elevations and vegetation densities in the different residential neighbourhoods, the thermal data and vegetation indices will have a significant impact on the quality of the classification result.
+                            The following land cover classification is performed within the cloud analysis tool Google Earth Engine. The classification is based on a segmentation of the Simple Non-Iterative Clustering Algorithm and is performed using the Random Forest. Finally, the results are validated according to Olofsson et al. (2014).
+                            At the beginning, the study area and its special features are discussed. In the following, the data basis used is explained. The methodology describes the Google Earth Engine, the pre-processing, segmentation and classification and the validation. The results are then presented and discussed. Finally, a conclusion is drawn and the work is reflected upon.
+                        <p></p>
+                        <h2>2. Study area</h2>
+                            The large Israeli city of Haifa (over 250,000 inhabitants) is located on the Mediterranean coast (Haifa Bay) and the northern foothills of the Carmel Mountains (Israeli Ministry of Tourism 2008). The originally Arab settlement is today - despite the Nakba (flight and expulsion of Arab Palestinians from former Palestine 1947-1949) that also took place here, the expropriations (1948) and the uprisings in the old Arab quarter of Wadi Salib in 1959 (Rabitz 2012; Kidron 2016, pp. 90-91) - one of Israel's most ethnically and religiously mixed cities and is considered a centre of the burgeoning young liberal Arab culture (dis:orient 2015, Hadid 2016), as well as the peaceful coexistence of Arabs and Jews (Diab et al. 2021, p. 6). Nevertheless, the (former) dividing lines between the different ethnic and religious groups can still be found in the form of the segregated urban structure and socio-demography of the residential neighbourhoods (Kidron 2016). 
+                            <figure class="floating-fig-right">
+                                <img src="../../img/project_haifa/Uebersichtskarte.jpg" class="img-float" style="max-width: 500px;">
+                                <figcaption><strong>Figure 2:</strong> True colour composite of the study area and surroundings.</figcaption>
+                            </figure>
+                            The lowest (and oldest) urban level is the old city (for example Wadi Salib/Wadi Nisnas), with proximity to the port and coast, which originally (and now again) tends to be populated by Arab populations (Kidron 2016, p. 93). On the middle city level (up the hill) is the middle city around Hadar HaCarmel, which compared to the lower city is characterised by looser development, business zones and from the beginning (in the first half of the 20th century) Jewish-dominated population (Kidron 2016, pp. 84-87). The highest-lying upper city (for example (Central) Carmel and Ahuza) forms Haifa's most expensive residential area with its generous plots of land, plenty of greenery and lower population density, and is also predominantly inhabited by Jewish populations (especially those who came to Haifa in the course of fleeing Nazism and around the founding of the State of Israel) (Kidron 2016, p. 98).
+                            The identification and differentiation of these three (residential) development types (in the literature they are also referred to as Urban Structure Types [USTs]) is the main objective of this study, which is why each development type is given its own LandUse-LandCover (LULC) class. In addition to the residential neighbourhoods that have historically grown up the slope of Mount Carmel, there is another large area of residential neighbourhoods to the north-east of the industrial areas, which can most closely be categorised as a medium-sized city in terms of development type (but not in terms of elevation) and is also classified due to its official affiliation with the city of Haifa.
+                            The industrial areas themselves will also appear as a separate class due to their qualitative and quantitative importance for the local economy and cityscape. Furthermore, the proximity to the sea and to the vegetation-rich slopes of the Carmel Mountains/areas within the city result in the obligatory classes of water and vegetation. The beach, certain industrial and numerous construction areas are taken into account by means of an open soil/sand class. In addition, the numerous road, park, railway and other (non-industrial or residential) sealed areas make it necessary to subsume them in a separate class.
+                            <figure class="full-width">
+                                <table>
+                                    <tr class="first-line">
+                                        <td>Nr.</td>
+                                        <td>LULC-Name</td>
+                                        <td>Description</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Industry</td>
+                                        <td>Industrial buildings, containers, industrial outdoor facilities</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Lower Town</td>
+                                        <td>Old town, very dense (residential) development</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Middle town</td>
+                                        <td>Business district, stand-alone apartment buildings/blocks of flats with green spaces</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Upper Town</td>
+                                        <td>Loose detached house development with large green plots</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>Impervious surfaces</td>
+                                        <td>Roads, car parks, railways, other buildings (not residential or industrial)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td>Vegetation</td>
+                                        <td>Forest, green areas, agricultural areas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>7</td>
+                                        <td>Open soil</td>
+                                        <td>Open soil, construction sites, sand, beach</td>
+                                    </tr>
+                                    <tr>
+                                        <td>8</td>
+                                        <td>Water</td>
+                                        <td>Sea, rivers</td>
+                                    </tr>
+                                </table>
+                                <figcaption><strong>Table 1:</strong> Description of the LULC classes.</figcaption>
+                            </figure>
+                            
+                        <h2>3. Data basis</h2>
+                            In the following, the different input data, their source and their purpose in terms of the research question will be discussed. 
+                            purpose in terms of the research question.
+                            <h3>3.1 RapidEye</h3>
+                                The satellite imagery is based on atmospheric-corrected (processing level 3A) RapidEye data. 
+                                data from the private provider Planet Labs (subcontractor: RapidEye AG) with a pixel resolution of 
+                                pixel resolution of 5 metres. RapidEye is (was: 2008 until 2020) a
+                                satellite system consisting of 5 satellites equipped with optical cameras. Due to the high 
+                                number of satellites and the - in favour of the spatial - low spectral resolution 
+                                the system was able to provide spatially high-resolution images in a timely manner. The RapidEye Earthimaging System (REIS) produces images in five bands (VIS and NIR): Blue (440-510 nm), 
+                                (520-590 nm), Red (630-685 nm), Red Edge (690-730 nm) and Near Infrared (760-850 
+                                nm). (ESA 2021)
+                                Within the investigation year 2015, scenes from 7 investigation time points -.
+                                4 from the humid winter period (hereafter rainy season) and 3 from the arid summer period (hereafter dry season). 
+                                summer period (hereafter dry season) - are selected to illustrate the different effects of the 
+                                effects of the Mediterranean climate in Haifa on the vegetation.
+                            <h3>3.2 SRTM</h3>
+                                As a basis for elevation information, the USGS's EarthExplorer is used to access the 30m 
+                                SRTM data (USGS EROS Archive - Digital Elevation - Shuttle Radar Topography Mission 
+                                (SRTM) 1 Arc-Second Global). The data were collected in the course of the Shuttle Radar 
+                                Topography Mission (SRTM) between 11 and 22 February 2000 from the US space shuttle 
+                                Endeavour (with the help of radar measurements) and correspond to a digital 
+                                digital terrain model (DTM), which shows the terrain shapes of the Earth's surface (object heights of artificial 
+                                of artificial objects) are georeferenced. (USGS 2021b)                        
+                            <h3>3.3 Landsat-8</h3>   
+                                As a basis for thermal data, atmospheric-corrected (Tier 1) Landsat-8 data from the beginning of July (dry season, in order to map the greatest possible image-internal differences due to altitude and the cooling effect of vegetation) in the year under investigation (2015) are used. The thermal bands 10 (10.6-11.19 µm) and 11 (11.5-12.51 µm) recorded with the help of the Thermal Infrared Sensor (TIRS) and resolved to 100m are used for this purpose. Landsat-8 is a NASA Earth observation satellite launched in 2013 with an Operational Land Imager (OLI; VIS, NIR, SWIR at a 30m resolution) and a Thermal Infrared Sensor (TIRS; infrared at a 100m resolution). (USGS 2021a)
+                            <h3>3.4 OSM</h3>
+                                The study area was defined as the administrative city limits of Haifa. For visualisation and editing/clipping of the other input data, a corresponding shapefile with the city area is required, which is obtained from OpenStreetMap (OSM) data using the QuickOSM plug-in for QGIS. OSM is a free project based on the Wiki principle for the creation of a free world map. (OSM 2021)
+                            <p></p>
+                        <h2>4. Methodology</h2>
+                            <figure class="floating-fig-right">
+                                <img src="../../img/project_haifa/workflow.png" class="img-float" style="width: 500px;">
+                                <figcaption><strong>Figure 3:</strong> Workflow of the study design</figcaption>
+                            </figure>
+                            The methodology described below is carried out almost exclusively within the Google Earth Engine. Exceptions are the creation of the training data, the interpretation of the test data and parts of the validation. At the beginning, the data pre-processing is described, in which mosaics are first created from the RapidEye images used, and these are then summarised within two time periods by means of median formation. Based on this, the NDVI and texture parameters are calculated using the Gray Level Co-occurrence Matrix, which serve as input data for the classification. Subsequently, the procedure for segmentation and classification is described. The Simple Non-Iterative Clustering algorithm is used for segmentation and the training data is generated on the basis of this algorithm. This is followed by classification using the Random Forest. Finally, the validation procedure according to Olofsson et al. (2014) is described and the creation of the test data using stratified random sampling is discussed.
+                            <h3>4.1 Google Earth Engine</h3>
+                                The practical implementation of the methodology is largely carried out in Google Earth Engine (GEE). GEE is a web- and server-based platform for the analysis and visualisation of geodata, which is provided free of charge by Google LLC (a subsidiary of Alphabet Inc.). The advantages of the engine lie on the one hand in the simplified access to existing remote sensing data (Landsat, Sentinel, SRTM, etc.) and on the other hand in the cloud-based calculation of operations, which relieves the burden on one's own home PC and (potentially) also enables analyses with larger data volumes. (Google Earth Engine 2021)
+                                Nevertheless, the capacities were regularly exceeded in the present analysis, which is reflected in particular in a severe restriction (feature selection) of the bands (statistics) used for segmentation and classification.
+                            <h3>4.2 Pre-processing</h3>
+                                The pre-processing of the analysis data takes place in GEE in a separate script (00_Data pre-processing). Here, all input data (see chapter "Data basis") are first imported into so-called assets (own geodata loaded onto the server) and/or loaded directly into the script.
+                                <h4>4.2.1 Mosaicisation & Cloud Reduction</h4>
+                                    
+                                    Since the study area is located in two tiles of the RapidEye system, the satellite image tiles that belong together (according to the date of recording) must first be joined together using mosaicking and clipped using the study area mask. In the case of the scenes from the beginning of July 2015, two different days (02.07. and 06.07.) are joined together, as no tiles from the same day were available. Due to the identical construction of the RapidEye satellites and the minor surface changes within four days, the deviation between the two tiles is negligible.
+                                    Since only two representative raster files (instead of 7) - one each for the summer dry season and the winter wet season - are needed as a satellite image basis, a reduction of the data (per wet and dry season) is carried out by means of median formation. This also makes it possible to reduce the cloud cover depicted, especially in the western part of the city, due to the proximity to the sea and the steep rise in altitude of the Carmel Mountains.
+                                <h4>4.2.2 Normalized Difference Vegetation Index (NDVI)</h4>
+                                    <figure class="floating-fig-right">
+                                        <img src="../../img/project_haifa/TrockenRegenNDVI.jpg" class="img-float" style="width: 500px;">
+                                        <figcaption><strong>Figure 4:</strong> NDVI Comparison of dry and wet season</figcaption>
+                                    </figure>
+                                    For a better separation of the classes water and vegetation, as well as for the differentiation of the inner-city vegetation, the Normalised Difference Vegetation Index (NDVI) is calculated from the RapidEye data. The index makes use of the fact that vegetation reflects little in the red spectral range (600-700 nm), but very strongly in the adjacent red edge/infrared spectral range (700-1300 nm). From the RapidEye data, the Red Edge band (690-730 nm) is selected for the NIR and the Red band (630-685 nm) for red. Normalisation leads to a range of values -1 to 1, with values between 0-0.2 indicating (almost) vegetation-free areas and the NDVI saturating towards the value 1 with increasing vegetation. (Huang et al. 2020)
+                                <h4>4.2.3.	Gray Level Co-occurrence Matrix (GLCM)</h4>
+                                    Texture parameters derived from the input data, such as the Gray Level Co-occurence Matrix (GLCM) (Johnson/Xie 2013, p. 43; Tassi/Vizzari 2020, p. 2), which was developed in the 1970s by Robert M. Haralick (Haralick et al. 1973), are suitable for improving the classification of urban structures.
+                                    In GEE, the calculation of the GLCM texture parameters is already implemented and designed for an extraction of 18 textural indices per input band and is performed here on all 14 input bands. After a visual interpretation of different window sizes for the calculation of the GLCM, the corresponding size parameter was set to 2, to perform the calculation based on a 5x5 moving window.
+                            <h3>4.3 Segmentation and classification</h3>
+                                The classification is preceded by a segmentation (in the GEE script: 01_Segmentation), which combines pixels with similar spectral properties into one segment. These segments are then classified using the random forest. In the following, the algorithms used are explained, the choice of these algorithms is justified and the determination of the parameters is discussed.
+                                <h4>4.3.1 Segmentation with the Simple Non-Iterative Clustering (SNIC) algorithm</h4>
+                                    The Simple Non-Iterative Clustering (SNIC) algorithm used here according to Achanta and Susstrunk (2017) is an improved version of the Simple Linear Iterative Clustering Algorithm (SLIC) algorithm according to Achanta et al. (2010).  This improvement is reflected in a non-iterative approach, resulting in power and memory savings (Achanta and Susstrunk 2017, p. 4651). The improvement of land cover classifications compared to pixel-based approaches by applying the SNIC algorithm, has been demonstrated in other research (Tassi/Vizzari 2020, p. 3).
+                                    At the beginning of the algorithm, the points of origin (centroids) of the clusters are distributed over the image in a uniform grid, the distance can be influenced by the user via the parameter size. The affiliation of a pixel to a cluster is determined by the Euclidean distance to the centre of gravity of a cluster in five-dimensional space; this includes the distance within the CIELAB colour space and the spatial distance.
+                                    <figure class="floating-fig-right">
+                                        <img src="../../img/project_haifa/Segmentierungskarte.jpg" class="img-float" style="width: 500px;">
+                                        <figcaption><strong>Figure 5:</strong> Representation of the 2,581 segments</figcaption>
+                                    </figure>
+                                    Here, s and m are the normalisation factors; s is conditioned by the number of pixels per centroid and m is the compactness factor specified by the user. Higher values lead to more compact clusters. Starting from the centroids set at the beginning, all pixels within a neighbourhood of 4 or 8 are added to a priority queue, then the pixels - starting with the smallest distance - are taken and added to the cluster. In the process, the centroid is recalculated for each pixel added and all its neighbours are added to the queue. This procedure is continued until all pixels have been assigned to a cluster (Achanta/ Susstrunk 2017, pp. 4653-4654).
+                                    For this study, the implementation of the algorithm in the GEE is used. The basis for the segmentation are the RapidEye bands of the dry and rainy seasons, the corresponding NDVIs, the DTM and the mean value of the Landsat 8 thermal bands (hence the 14 input bands). The parameters size and compactness factor have a particular influence on the result. Because the focus of the parameter tuning is on these, the other parameters neighbourhood (connectivity) and neighbourhood size (neighbourhoodSize) are left at the default values of 8 and (2*size). Since the segments are supposed to distinguish different city types, this is the main criterion for the visual evaluation of the segmentation results. The size and compactness factor were iteratively increased between 5 and 50 and 1 and 40 and the result was interpreted visually. This procedure was repeated until the appropriate parameters (size: 15; compactness factor: 20) were found for the application.
+                                    Within each segment, statistics (mean and standard deviation) of the underlying bands are calculated, i.e. the original bands and the GLCM texture parameters calculated on them. This is done in order to obtain only one value per statistic/band (or the same value in each pixel of the segment) per segment afterwards and to be able to perform the downstream classification on the basis of the segments. This results in an input file for the classification with 532 attributes.
+                                <h4>4.3.2 Preparation of training data</h4>
+                                <figure class="floating-fig-right">
+                                    <table>
+                                        <tr class="first-line">
+                                            <td>Class</td>
+                                            <td>Nr.</td>
+                                            <td>Number of test pixels</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Industry</td>
+                                            <td>1</td>
+                                            <td>91</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Lower Town</td>
+                                            <td>2</td>
+                                            <td>21</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Middle Town</td>
+                                            <td>3</td>
+                                            <td>77</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Upper Town</td>
+                                            <td>4</td>
+                                            <td>90</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Impervious surfaces</td>
+                                            <td>5</td>
+                                            <td>146</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Vegetation</td>
+                                            <td>6</td>
+                                            <td>234</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Open soil</td>
+                                            <td>7</td>
+                                            <td>44</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Water</td>
+                                            <td>8</td>
+                                            <td>141</td>
+                                        </tr>
+                                        <tr class="first-line">
+                                            <td>Total</td>
+                                            <td></td>
+                                            <td>844</td>
+                                        </tr>
+                                    </table>
+                                    <figcaption><strong>Table 2:</strong> Number of selected training segments per class</figcaption>
+                                </figure>    
+                                The collection of training data is carried out on the basis of the segments. The basis for assigning the training segments to a class is provided by the RGB composites of the RapidEye images (dry and rainy season) as well as near-real time aerial photographs. The number of selected segments depends on the area size (approximately determined with a preceding test classification) of the respective land cover class to be classified. 
+                                    
+                                    
+                                    <h4>4.3.3 Classification with the Smile Random Forest Classifier</h4>
+                                    The Random Forest (RF) is a non-parametric, supervised classifier ensemble. It consists of a combination of decision trees, each of which receives a random subset of training regions (bagging). The decision trees are then trained, with a random selection of the features available to the classifier taking place at each node in order to decide on the feature that provides the highest information gain (random feature selection). This information gain is calculated using the Gini index or entropy; this means that the purer the classes are divided according to a node, the higher the information gain (Sheykhmousa et al. 2020b, pp. 6312-6313). Subsequently, the unseen data (pixels to be classified) pass through the decision trees to make a class decision for each pixel at the end. Among all classifiers, a majority decision is used to make a final class decision. When training the decision trees, they are left fully trained (no pruning). Since a large number of trees are used, this does not lead to overfitting (Pal 2005, p. 218). In addition, the RF can deliver good results much better than other classification algorithms with many features, without the Hugh Phenomena occurring (Belgiu and Drăguţ 2016, pp. 29-30). In addition, RF offers the possibility to obtain information about the classification before validation through two measures. Bagging makes it possible to perform an internal cross-validation (out-of-bag-error) using the remaining training areas, which simplifies the assessment of the quality of the classification. In addition, the feature importance can be output, which allows conclusions to be drawn about the importance of a variable in the classification process (Belgiu and Drăguţ 2016, p. 25). The fact that the RF can handle a large amount of input data very effectively and that it offers the possibility of making the best possible selection of input data through feature importance makes it very advantageous for this study. The cooperation of the RF in combination with the SNIC algorithm has already been applied in many land cover classifications and led to good results (Shafizadeh-Moghadam 2021, p. 12-13; Tassi/Vizzari 2020, p. 9; Mahdianpari 2020, p.31).
+                                    <h5>4.3.3.1 Parameter tuning</h5>
+                                        When training an RF, two parameters need to be set. The number of decision trees (ntree) and the number of selected features at each node (mtry) (Thanh Noi and Kappas 2018, p. 7). It has been shown that even the default settings of these parameters can provide good results; in this case, 500 is usually chosen for ntree and the root of the number of input features is chosen for mtry (Duro et al. 2012, pp. 48-50; Belgiu and Drăguţ 2016, p. 25). Since the focus in this study is on segmentation, the default settings are retained.
+                                    <h5>4.3.3.2 Feature Selection</h5>
+                                        Based on the 532 input features, those are selected (in the study; script: 02_classification) which have the highest explanatory share on the basis of feature importance. This is particularly necessary because the GEE constantly aborts the calculation with such a high number of features due to too large data volumes (Error: User Memory Limit exceeded). Especially the mean value of the two Landsat 8 thermal bands, the NDVIs for the dry and rainy season, the DTM and band 1 of RapidEye turn out to be the features that are of particular importance for the classification.
+                                        A high explanatory part can also be observed in the texture parameters calculated on these bands, here the Sum Average [SAVG], the Correlation [CORR] and the Difference Entropy [DENT] stand out. For the statistics calculated within the segments (mean, standard deviation), the mean can be found for the original input bands and both the mean and the standard deviation can be found on the GLCM texture parameters as statistics with outstanding explanatory power.
+                            <h3>4.4 Validation</h3>
+                                In order to be able to make statements about the quality of the classification and thus answer the question, validation is indispensable (GEE scripts: 03_Sampling_Validation and 04_Validation_Olofsson). The two most used validation measures in recent years have been the overall accuracy (OA) and the kappa score. The Kappa Score has been much criticised and used less frequently in recent years, which is why it is not used in this paper (Heydari/Mountrakis 2018, p. 651).
+                                <h4>4.4.1 Validation procedure according to Olofsson et al. (2014)</h4>
+                                    The validation carried out is based on Olofsson et al. (2014). They suggest stratified random sampling as the sampling design, which is also used in this work; the concrete implementation is explained in the following chapter. To describe the quality of the classification and its comparison, a confusion matrix and the validation measures: OA, producer and user accuracies (PA and UA) as well as area sizes are used. Finally, these are calculated according to the recommendations of Olofsson et al. (2014) with 95% confidence intervals in order to be able to make statements about the certainty of the validation measures.  Code from the GEE application AREA² is used to calculate the validation measures (Bullock/Olofsson 2018). Since this does not offer the complete and correct calculation of all validation measures described above, the missing measures are then added using a Python script and the existing ones are compared.
+                                <h4>4.4.2 Creation of test data</h4> 
+                                    The basis for the creation of the test data is stratified random sampling. The random distribution of the test pixels is then based on the area of the classes; the larger a class is, the more test pixels it receives (see Table 6). The suburban and open ground classes each receive 9 test pixels, so that test pixels have to be added manually in order to be able to make acceptable statistical statements (Olofsson et al. 2014, p. 55). Subsequently, the test pixels are manually interpreted using the RGB composites of the RapidEye images of the dry and rainy seasons and contemporary aerial images within the segment surrounding them. In borderline cases, the class that has the largest proportion within the segment is selected. As GEE does not offer the possibility to validate on the basis of the polygons/segments, this procedure is unavoidable.
+                        <h2>6. Results</h2>
+                            <figure>
+                                <img src="../../img/project_haifa/Ergebniskarte.jpg">
+                                <figcaption><strong>Figure 6:</strong> The classification result</figcaption>
+                            </figure>
+                            <figure class="floating-fig-left">
+                                <img src="../../img/project_haifa/Olofsson_Validierung.jpg" class="img-float" style="width: 300px;">
+                                <figcaption><strong>Table 3:</strong> Spatial and spectral proximity of classes 1 (industry), 5 (sealed surfaces) and 7 (open soil)</figcaption>
+                            </figure>
+                            <figure class="floating-fig-left white-back">
+                                <img src="../../img/project_haifa/errormatrix.png" class="img-float" style="width: 300px; ">
+                                <figcaption><strong>Table 4:</strong> Spatial and spectral proximity of classes 1 (industry), 5 (sealed surfaces) and 7 (open soil)</figcaption>
+                            </figure>
+                            
+                            The OA (see Table 8) of 86.8% (2.33% standard deviation in the 95% confidence interval [CI]) indicates an overall good classification result. This and the following percentage (accuracy) data are taken from the good practice evaluation method (partly weighted by area [Olofsson et al. 2014, p. 51]) according to Olofsson et al. (2014).
+                            Classes 6 (vegetation) and 8 (water) could be well identified and distinguished from the other classes with a Producers Accuracy (PA) of 90% and 95% and Users Accuracy (UA) of 91% and 97%, respectively. In addition, they show the lowest AI deviations (<= 4%).
+                            Class 5 (sealed areas) could also be identified and delimited relatively well with a PA of 81%, a UA of 78% and low AIs (6% and 7%). Misclassifications occurred here mainly due to mutual confusion with Class 1 (Industry) and Class 7 (Open Soil) (see Figure 8), and are probably due to the spatial (as well as spectral) proximity of both classes. Together with class 6 (Vegetation) and 8 (Water), this class is one of the largest classes in terms of area in the study area (5: 14.04 km²; 6: 21.77 km²; 8: 13.74 km²).
+                            <figure class="floating-fig-right">
+                                <img src="../../img/project_haifa/Klassenvergleich_1_5_7.jpg" class="img-float" style="width: 500px;">
+                                <figcaption><strong>Figure 7:</strong> Spatial and spectral proximity of classes 1 (industry), 5 (sealed surfaces) and 7 (open soil)</figcaption>
+                            </figure>
+                            Class 7 (open soil) achieved the worst classification result of all classes with a PA of 45%, a UA of 62% and correspondingly high AIs (13% and 14%). The 17 percentage points lower PA (compared to UA) indicates underclassification (the proportion of pixels classified as open soil is significantly lower compared to the expected proportion). According to the Errormatrix (see Table 7), this is due in particular to the already mentioned confusion with Class 5 (sealed surfaces).
+                            With 80% PA, 85% UA as well as 7% and 8% KI, class 1 (industry) delivers a similarly good classification result as class 5 (sealed surfaces), with which it is also most frequently confused according to the errormatrix due to the spectral and spatial proximity already mentioned. With an estimated size of 8.49 km² from the classification result, it belongs to the medium-sized classes of this study.
+                            <figure class="floating-fig-left">
+                                <img src="../../img/project_haifa/Klassenvergleich_3_4_5_6.jpg" class="img-float" style="width: 500px;">
+                                <figcaption><strong>Figure 8:</strong> Spatial and spectral proximity of classes 3 (middle city), 4 (upper city), 5 (sealed areas) and 6 (vegetation)</figcaption>
+                            </figure>
+                            Of the three target classes (2, 3 and 4), class 2 (Lower Town) performs worst in the validation with a PA of 65%, UA of 82% and the highest AI values (26% and 17% respectively). The low accuracy and high AI values result here - just as in the case of class 7 - partly from the small total area of the class (2: 1.81 km²; 7: 2.85km²), which is included in the validation according to Olofsson due to the stratified sampling approach (Olofsson et al. 2014, p. 51). According to the error matrix (independent of Olofsson), the class would have a significantly better producer accuracy (86%). Some segments belonging to the class were wrongly classified as class 3 (medium city), while other segments classified as class 2 actually belong to class 1 (industry). These confusions with class 1 probably result from the spatial and spectral (high building density with low vegetation percentage) proximity of the classes.
+                            With a PA and UA of 78% and KI values of 8 and 9% respectively, target class 3 (medium city) achieved a (comparatively) medium good classification result and a calculated area of 7.72 km². According to the error matrix, the segments erroneously classified as class 3 are distributed relatively evenly across all classes (with the exception of class 8: water). In contrast, the segments belonging to the actual class, which were incorrectly classified, are clustered in classes 4 (upper city), 5 (sealed areas) and 6 (vegetation) (see Figure 9). This can probably be attributed to the spectral similarity of the classes (classes 3 and 4 each consist [differently] proportionately of sealed [building] and vegetation areas). 
+                            
+                            Target class 4 (Upper Town) was the best validated of all target classes with a PA of 89%, a UA of 81% and low AI values (6% and 8% respectively) and also in the comparison of all classes (with) and reaches a calculated area size of 9.23 km². Segments wrongly classified as class 4 are - as already mentioned and for the same reasons - mainly found in classes 3 (medium city), 5 (sealed areas) and 6 (vegetation) (see Figure 9). Misclassified Class 4 segments are also found exclusively (and for the same reasons) in these classes, with Upper Town segments most often mistaken for Vegetation.
+                        <h2>6. Discussion</h2>
+                            In a study by Mugiraneza et al. (2019), twelve urban land covers in Kigali were classified using WorldView-2 satellite data and segmentation. GLCM texture parameters and elevation data were used, as in this study (Mugiraneza et al. 2019, pp. 1-4). Despite the use of a two-stage classification with SVM and a rule-based classification, that study achieved an OA of 85.36%, which is slightly lower than in this work (86.8%). There too, the authors highlight the difficulty of distinguishing between the different types of urban development (Mugiraneza et al. 2019, pp. 18-19).
+                            In a study on slum growth in Lagos by Badmos et al. (2018), RapidEye satellite data and segmentation were used in combination with rule-based classification to classify potential land cover change. For this purpose, both GLCM texture parameters and NDVI were used to separate the classes (Badmos et al. 2018, pp. 5-10). The result of the study showed an accuracy of 94%, which is significantly different from the accuracy achieved here. However, this can probably be attributed to the lower number of urban residential classes.
+                            In a paper by Tassi/Vizzari (2020) with a similar methodology but a different object of investigation as/than in this paper, a pixel-based approach was compared with an object-based approach based on the SNIC algorithm in application to an agricultural land cover analysis in rural Italy using the GEE. They used three different satellites (Landsat 8, Sentinel 2 and PlanetScope) as well as different classifiers (RF and Support Vector Machine); both with and without GLCM texture parameters. Here, the pixel-based approach provided better accuracy on Landsat 8 (79.1%) and the object-based approach on Sentinel 2 (89.2%) and PlanetScope (77.9%). Sentinel 2 and PlanetScope also showed that the application of GLCM texture parameters and RF as factors can improve the result. Despite the high spatial resolution of PlanetScope (3m), Sentinel 2 provided better results, which the authors attribute to higher temporal and spectral resolution (Tassi/Vizzari 2020, pp. 9-13). This shows the high importance of good temporal resolution in median formation of satellite input data, as it was also used in our study.
+                            From the aforementioned sources, it can be concluded that especially GLCM texture parameters are a popular tool in object-based approaches on high or medium resolution imagery to gain further information and increase separability in spectrally similar segments. Furthermore, elevation data and vegetation indices have also found application in the literature. Based on the OA, the result achieved in this study is roughly on par with the aforementioned work.
+                        <h2>7. Conclusion</h2> 
+                            With regard to the question posed at the beginning, whether and with what accuracy the urban differences in Haifa can be detected by means of an object-based RF classification with the addition of GLCM texture parameters, the following can be stated: The OA of about 86% as well as the PAs and UAs of the three target classes (2, 3 and 4), which are mainly in the range of about 80% (except for the PA of class 2, which however would also be 86% according to the standard procedure [not according to Olofsson et al. 2014]) indicate an overall good detectability of Haifa's particular (segregated) urban structure using the chosen means.
+                            The separability of the three target classes from each other and from other classes - based on the error matrix - also worked well in most cases. Only the separation of classes 3 (middle city) and 4 (upper city) from each other and especially from classes 5 (sealed areas) and especially 6 (vegetation) showed minor blurring due to the similarity of these classes.
+                            The best explanations for separating the classes in the classification were provided (despite the comparatively poorer resolution of 100m) by the mean thermal band from the Landsat 8 data, the NDVIs, the elevation data (also a comparatively poorer resolution of 30m) and bands 1 (blue) and 5 (NIR) of the RapidEye data. The initial assumption that the thermal, elevation and vegetation indices (here NDVIs) (possibly [also] due to the special urban structure of Haifa) have a high explanatory power in this study area can thus be confirmed.
+                            In addition, the use of GLCM texture parameters (especially Sum Average, Correlation and Difference entropy) contributed significantly to the improvement of the explanatory performance according to Feature Importance.     
+                        <h2>8. Reflection and Perspectives</h2>
+                            The greatest challenge in the methodological implementation of the study lay in the computational capacity-related restrictions of GEE. For example, only a fraction of the available input or training data could be used for segmentation and classification. Exceeding the non-transparent upper limit - which was related to the file size of the input data, among other things - regularly led to error codes such as User Memory Limit exceeded, Internal error or Computation timed out. For this reason, a stringent feature selection and limitation of the training data had to be carried out, without which an (at least slightly) better result could probably have been achieved.
+                            Other input data that could have been used in this context would have been, for example, the Normalised Difference Built-up Index (NDBI), which can potentially improve the differentiation of (residential) development (Zha et al. 2003). For this, however, an additional MIR band was missing, which does not exist in the RapidEye data. To compensate, however, data from another satellite (such as Landsat 8) could have been used here, for example.
+                            Furthermore, since inner-city (private and public green spaces in urban areas) vegetation may differ greatly from extra-urban (forest) vegetation in the alternation between rainy and dry seasons - due to the irrigation of inner-city vegetation areas during the dry season - a subtraction of the dry and rainy season NDVIs could have improved the result.
+                            Although the use of an object-based approach for the classification of urban structures makes sense - as already pointed out in the discussion - this approach could have been validated with a comparison to a pixel-based approach on the same input data.
+                            Finally, the merging of some classes (e.g. industry and sealed surfaces, or open soil and vegetation) was considered, but rejected due to the resulting poorer classifications of the target classes. 
+                        <div class="bibliography">
+                            <h2>Bibliography</h2>
+                        <a href="https://infoscience.epfl.ch/record/149300" class="hover-a-white">Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., Süsstrunk, S. (2010): Slic superpixels. In: EPFL.</a><br>
+Achanta, R., Susstrunk, S. (2017): Superpixels and polygons using simple non-iterative clustering. In: Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition S. 4651–4660.<br>
+Badmos, O. S., Rienow, A., Callo-Concha, D., Greve, K., Jürgens, C. (2018): Urban development in West Africa—Monitoring and intensity analysis of slum growth in Lagos: Linking Pattern and Process. Remote Sensing, 10(7), S. 1044.<br>
+Belgiu, Mariana; Drăguţ, Lucian (2016): Random forest in remote sensing: A review of applications and future directions. In: ISPRS Journal of Photogrammetry and Remote Sensing 114, S. 24–31.<br>
+Bochow, Mathias; Taubenböck, Hannes; Segl, Karl; Kaufmann, Hermann (2010):  An Automated and Adaptable Approach for Characterizing and Partioning Cities into Urban Structure Types. In: IEEE International Geoscience and Remote Sensing Symposium, 2010, S. 1796–1799, doi: 10.1109/IGARSS.2010.5652972.<br>
+<a href="https://area2.readthedocs.io/en/latest/example_str.html" class="hover-a-white">Bullock, E., Olofsson, P. (2018): Stratified estimation of area and accuracy. In: AREA².</a><br>
+Diab, Ahmed Baker; Shdema, Ilan; Schnell, Izhak (2021): Arab integration in new and established mixed cities in Israel. In: Urban Studies<br>
+<a href="https://www.disorient.de/magazin/haifa-die-hauptstadt-der-palastinensischen-kultur-israel" class="hover-a-white">dis:orient (2015): Haifa - die Hauptstadt der palästinensischen Kultur in Israel. In: dis:orient-Onlineportal vom 21.06.2015.</a><br>
+Duro, Dennis C.; Franklin, Steven E.; Dubé, Monique G. (2012): A comparison of pixel-based and object-based image analysis with selected machine learning algorithms for the classification of agricultural landscapes using SPOT-5 HRG imagery. In: Remote sensing of environment 118, S. 259–272.<br>
+<a href="https://earth.esa.int/eogateway/missions/rapideye" class="hover-a-white">ESA (2021): RapidEye.</a><br>
+<a href="https://earthengine.google.com/faq/" class="hover-a-white">Google Earth Engine (2021): Google Earth Engine - FAQ.</a><br>
+<a href="https://www.nytimes.com/2016/01/04/world/middleeast/in-israeli-city-of-haifa-a-liberal-palestinian-culture-blossoms.html" class="hover-a-white">Hadid, Diaa (2016): In Israeli City of Haifa, a Liberal Arab Culture Blossoms. In: The New York Times-Onlineportal vom 03.01.2016.</a><br>
+Haralick, Robert M/Shanmugam, K./Dinstein, Its hak (1973): Textural Features for Image Classification. In: IEEE Transactions on Systems, Man and Cybernetics, Vol. 3, S. 610–621.<br>
+Heydari, Shahriar S.; Mountrakis, Giorgos (2018): Effect of classifier selection, reference sample size, reference class distribution and scene heterogeneity in per-pixel classification accuracy using 26 Landsat sites. In: Remote sensing of environment 204, S. 648–658.<br>
+Huang, Sha/Tang, Lina/Hupy, Joseph P./Wang, Yang/Shao, Guofan (2020): A commentary review on the use of normalized difference vegetation index (NDVI) in the era of popular remote sensing. IN: Journal of Forestry Research, Vol. 32, April 2021, S. 1–6. DOI: https://doi.org/10.1007/s11676-020-01155-1.<br>
+<a href="https://web.archive.org/web/20080414134000/http://www.tourism.gov.il/Tourism_Euk/Destinations/Haifa/general+info.htm" class="hover-a-white">Israeli Ministry of Tourism (2008): Haifa – General Info.</a><br>
+Johnson, Brian/Xie, Zhixiao (2013): Classifying a high resolution image of an urban area using super-object information. In: ISPRS Journal of Photogrammetry and Remote Sensing, Vol. 83, S. 40–49.<br>
+Kidron, Anat (2016): Separatism, coexistence and the landscape: Jews and Palestinian-Arabs in mandatory Haifa. In: Middle Eastern Studies, 52(1), S. 79–101.<br>
+Mahdianpari, M., Salehi, B., Mohammadimanesh, F., Brisco, B., Homayouni, S., Gill, E., Bourgeau-Chavez, L. (2020): Big data for a big country: the first generation of Canadian wetland inventory map at a spatial resolution of 10-m using Sentinel-1 and Sentinel-2 data on the Google Earth Engine cloud computing platform. Canadian Journal of Remote Sensing, 46(1), S. 15–33.<br>
+Mugiraneza, T., Nascetti, A., Ban, Y. (2019): WorldView-2 data for hierarchical object-based urban land cover classification in kigali: Integrating rule-based approach with urban density and greenness indices. Remote Sensing, 11(18), S. 2128.<br>
+Mushore, Terence Darlington; Mutanga, Onisimo; Odindi, John; Dube, Timothy (2016):  Assessing the potential of integrated Landsat 8 thermal bands, with the traditional reflective bands and derived vegetation indices in classifying urban landscapes. In: Geocarto International, 32(8), S. 886–899.<br>
+Olofsson, Pontus; Foody, Giles M.; Herold, Martin; Stehman, Stephen V.; Woodcock, Curtis E.; Wulder, Michael A. (2014): Good practices for estimating area and assessing accuracy of land change. In: Remote sensing of environment 148, S. 42–57.<br>
+<a href="https://www.openstreetmap.de/faq.html" class="hover-a-white">OSM (2021): OpenStreetMap – Deutschland. FAQs: Fragen und Antworten.</a><br>
+Pal, Mahesh (2005): Random forest classifier for remote sensing classification. In: International journal of remote sensing 26 (1), S. 217–222.<br>
+<a href="https://www.dw.com/de/die-vergessene-geschichte-von-haifa/a-16410352" class="hover-a-white">Rabitz, Cornelia (2012): Die vergessene Geschichte von Haifa.</a><br>
+Shafizadeh-Moghadam, H., Khazaei, M., Alavipanah, S. K., Weng, Q. (2021): Google Earth Engine for large-scale land use and land cover mapping: an object-based classification approach using spectral, textural and topographical factors. GIScience & Remote Sensing, S. 1–15.<br>
+Sheykhmousa, Mohammadreza; Mahdianpari, Masoud; Ghanbari, Hamid; Mohammadimanesh, Fariba; Ghamisi, Pedram; Homayouni, Saeid (2020a): Support Vector Machine vs. Random Forest for Remote Sensing Image Classification: A Meta-analysis and systematic review. In: IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing.<br>
+Tassi, A., Vizzari, M. (2020): Object-oriented lulc classification in google earth engine combining snic, glcm, and machine learning algorithms. Remote Sensing, 12(22), S. 3776.<br>
+Thanh Noi, Phan; Kappas, Martin (2018): Comparison of random forest, k-nearest neighbor, and support vector machine classifiers for land cover classification using Sentinel-2 imagery. In: Sensors 18 (1), S. 18.<br>
+<a href="https://www.usgs.gov/core-science-systems/nli/landsat/landsat-8?qt-science_support_page_related_con=0#qt-science_support_page_related_con" class="hover-a-white">USGS (2021a): Landsat 8.</a><br>
+<a href="https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1-arc?qt-science_center_objects=0#qt-science_center_objects" class="hover-a-white">USGS (2021b): USGS EROS Archive - Digital Elevation - Shuttle Radar Topography Mission (SRTM) 1 Arc-Second Global.</a><br>
+Zha, Y., Gao, J. Ni, S. 2003, "Use of normalized difference built-up index in automatically mapping urban areas from TM imagery", International Journal of Remote Sensing, vol. 24, no. 3, pp. 583–594.
+</div>
+                        </p>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="left-footer">
+                <h2>About this page</h2>
+                <p>
+                    This is a portfolio page of <a href="mailto:me@moritzlucas.de" class="hover-a-white">Moritz Lucas</a>. 
+                    Here you can see some of his completed <a href="projects.html" class="hover-a-white">works</a>, read <a href="blog.html" class="hover-a-white">articles</a> and can get <a href="mailto:me@moritzlucas.de" class="hover-a-white">in touch</a>.
+                </p>
+            </div>
+            <div class="right-footer">
+                <h2>Formalities</h2>
+                <a href="impressum.html" class="hover-a-white">Impressum</a>
+            </div>
+            <div class="below-footer">
+                <div class="centri">
+                    <div class="btn-con" style="z-index: 10;">
+                        <a href="" class="main-btn">
+                            <span class="btn-text">Download CV</span>
+                            <span class="btn-icon"><i class="fas fa-download"></i></span>
+                        </a>
+                    </div>
+                    <a href="https://github.com/Moerizzy" target="_blank" class="contact-icon">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    
+                    <a href="https://www.linkedin.com/in/moritz-lucas-76797b1a4" target="_blank" class="contact-icon">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="mailto:me@moritzlucas.de" target="_blank" class="contact-icon">
+                        <i class="fas fa-at"></i>
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </footer>
+
+    <div class="controls">
+        <div class="control" data-id="home" >
+            <a href="../../index.html">
+                <i class="fas fa-home"></i>
+            </a>
+        </div>
+        <div class="control" data-id="about">
+            <a href="../about.html">
+                <i class="fas fa-user"></i>
+            </a>
+        </div>
+        <div class="control active-btn" data-id="projects">
+            <a href="../projects.html">
+                <i class="fas fa-book"></i>
+            </a>
+        </div>
+        <div class="control" data-id="blog">
+            <a href="../blog.html">
+                <i class="far fa-newspaper"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="theme-btn">
+        <i class="fas fa-adjust"></i>
+    </div>
+
+    <script src="../../app.js"></script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moritz Portfolio</title>
+    <link rel="icon" href="../../img/logo_erde.png">
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="main-content">
+    <main>
+        <section class="container active single_blog" id="impressum">
+            <div class="single-blog-container">
+                <div class="main-title">
+                    <h2>Spatial Analysis of <span>Water Capacity</span></h2>
+                    <h3>Spatial Analysis of Water Capacity in southern Australia by detailed Variogram Evaluation</h3>
+                    by Moritz Lucas
+                </div>
+                <div class="single-blog-content-con">
+                    <p>
+                        <h2 class="main-heading">Abstract</h2>
+                        <p class="highlight-text">
+                            This project was one of 3 assignments that we had to complete during the semester in the Geodata Analysis course. The aim of the assignment was to investigate an existing spatial product (in my case the water capacity of the soil at a depth of 15-30 cm) using geostatistical methods such as variogram analysis. In the process, emprical and directional variograms with different lag distances and tolerances were calculated and then various theoretical variograms were fitted using different methods. 
+                            The results showed that, a lag distance of 1000m and a lag tolerance of 500m leads to the most interpretable empirical
+                            variograms. Examination of the directional variograms and the variogram map shows that the direction
+                            of major continuity was north-south with a range of 10km and a sill of 0.75, and the direction of minor
+                            continuity was east-west with a range of 25km and a sill of 0.9. When fitting the theoretical variograms,
+                            the result achieved by
+                            visual interpretation was slightly better.
+                            The individually fitted models, on the other hand, show a very
+                            good result with an r² close to one.
+                        <p>
+                        <h2>1. Introduction</h2>
+                        The aim of this assignment is to investigate the spatial trends and distribution of water capacity at a
+                        depth of 15-30cm in South Australia near to Port Lincoln. For this purpose, samples taken from the
+                        available data and empirical variograms with different lag distances, tolerances and directions created on
+                        the basis of these samples. As a result, statements can be made about range, sill and the nugget effect.
+                        And from this, conclusions can be drawn about the directionality and anisotropy of the data. Finally,
+                        different approaches and models used to fit theoretical variograms.
+                        <h2>2. Study Area</h2>
+                        The study area is located in the south of the territory of South Australia between the Spencer Gulf in the
+                        east and Great Australian Bight in the west Figure 1. The area have an extension in east-west direction
+                        of 104.6 km and in north-south direction of 87.1 km and covers an area of 9.110.6 km².                                             
+                        <figure>
+                            <img src="../../img/project_geostatistics1/ugebiet.png">
+                            <figcaption>Figure 1: The study area in southern Australia</figcaption>
+                        </figure>
+                        <h2>3. Methods</h2>
+                        <h3>3.1. Data</h3>
+                        The data used is provided by the Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+                        and is publicly available. The data were created using newly analysed agricultural legacy map data, using
+                        both the expert knowledge hidden in the legacy maps and newly interpreted spatial ground information by
+                        geostatistical methods. Ten different products were created with a spatial resolution of 100m available in
+                        six different depths (0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm and 100-200cm) [Liddicoat et al., 2015].
+                        In the following, only the water capacity data at a depth of 15-30 cm is analysed.
+                        <h3>3.2 Workflow</h3>
+                        The analysis is implemented in Python, using the packages rasterio, numpy, matplotlib, gstools and
+                        geostatspy. First step of the analysis was to take a look at the statistics of the data. In order to create
+                        the first variograms, samples had to be taken from the data, as the computation time was too long with
+                        the full data. Thereby, 10000 samples are randomly chosen, which is a quite high number of samples,
+                        but this leads to an acceptable computation time and smoothed variograms. After that the samples
+                        transformed into a Gaussian distributed with a mean of 0.0 and variance of 1.0. This is helpful to work
+                        with outliers and leads to easy to interpret variograms. In order to evaluate at what distance a spatial
+                        correlation exists in the data, different lag distances, tolerances and number of lags are tested. After that,
+                        empirical variograms for each direction and a varogram map are computed and compared. The resulting
+                        insights were used to find a theoretical variogram that best represents the spatial trends. This is done
+                        by three different methods using visual interpretation and least square method. First, two models were
+                        fitted by least squares, one for each of the main axes. But to unite the zonal anisotropy in a nested model
+                        as described by [Bardossy, 1997, p. 39], two more models were fitted by visual interpretation and least
+                        squares. Afterwards the results were compared.
+                        <h2>4. Results</h2>
+                        <h3>4.1 Data processing</h3>
+                        In the following, the data processing results are presented, showing and describing the statistics of the
+                        data, the effects of the Gaussian transformation and the spatial distribution of the randomly drawn
+                        samples.
+                        <h4>4.1.1 Data</h4>
+                        The data set used is available as a .tif file and has an extension of 871 x 1046 cells. In total are 911066
+                        data points available with a mean value of 9.3, a minimum value of 0 and a maximum value of 14.4
+                        Figure 2.
+                        <figure>
+                                <img src="../../img/project_geostatistics1/data.png">
+                                <figcaption>Figure 2: The realisation and statistics of the water capacity (15-30cm) data</figcaption>
+                        </figure>
+                        <h4>4.1.2 Gaussian Transform</h4>
+                        <figure>
+                            <img src="../../img/project_geostatistics1/gaussian.png">
+                            <figcaption>Figure 3: The distribution of the water capacity before and after the Gaussian transform</figcaption>
+                        </figure>    
+                        <h4>4.1.3 Sampling</h4>
+                        <figure>
+                            <img src="../../img/project_geostatistics1/sampling.png">
+                            <figcaption>Figure 4: The random sampling before and after the Gaussian transform</figcaption>
+                        </figure> 
+                        <h3>4.2 Experimental Variograms</h3>
+                        One rule of thumb is that the half of the greatest distance in the study area is the maximum distance
+                        in which values corresponding [Bardossy, 1997, p. 35]. In this case, the maximum distance is 136.61 km.
+                        According to the maximum distance for corresponding values is 68.305 km. This distance is used in
+                        omnidirectional experimental variograms to set the lag distance, lag tolerance and the number of lags
+                        and get a first impression of the distribution. In Figure 5 can be seen that there is a strong and fast
+                        increase in variance between 0 and 10 km distance, so the range can be found around 10km. The long
+                        and constant course between 10km and 40km shows a clear sill at 0.75. The increase from 40km onwards
+                        is probably no longer part of the variogram due to its distance and can be attributed to randomness and
+                        noise.
+                        <h4>4.2.1 Variogram sensitivity to lag distance</h4>
+                        In Figure 5 different lag distance and their effects are shown. With increasing distances, the curve
+                        becomes smoother, but there is also a loss of data, as small movements can no longer be detected. With
+                        regard to the statements of [Deutsch, 2015, p. 1], this should be chosen in such a way that has a good
+                        compromise between stability and precision. In view of these statements and the illustration, the lag
+                        distance was set at 1000m.
+                        <figure class="white-back">
+                            <img src="../../img/project_geostatistics1/lag.png">
+                            <figcaption>Figure 5: Omnidirectional experimental variograms with different lag distances
+                            </figcaption>
+                        </figure> 
+                        <h4>4.2.2 Variogram sensitivity to lag tolerance</h4>
+                        In Figure 6 different lag tolerances and their effects are shown. You can see that with increasing tolerances
+                        the curve appears smoother. Here, too, the recommendations of [Deutsch, 2015, p. 3] and the illustrations
+                        were used to set the lag tolerance to 500m. Further variograms will have a maximum lag distance of 30
+                        km, as this allows a more precise view of the essential part.
+                        <figure class="white-back">
+                            <img src="../../img/project_geostatistics1/toleraces.png">
+                            <figcaption>Figure 6: Experimental variograms with different lag tolerances
+                            </figcaption>
+                        </figure> 
+                        <h4>4.2.3 Variogram sensitivity to lag direction</h4>
+                        In Figure 7 can be seen that there are differences in different directions of the variograms. In the first
+                        two and the last two variograms (Azimuth: 0, 22.5, 135, 157.5) the same structure can be recognised: A
+                        strong fast increase to the range at about 10 km and a sill at about 0.75. A different development can
+                        be seen in the middle variograms (Azimuth: 45, 67.5, 90, 112.5). These also rise sharply at first, this
+                        rise slows down so that the range expands to 25 km and the sill is also somewhat higher at about 0.9.
+                        This means that the isotrophy can be excluded in this case. In the variogram map of Figure 8 the typical
+                        ellipse, which stands for geometric anisotrophy, is visible. But since you cannot see the same sill here,
+                        there is zonal anisotrphy present [Bardossy, 1997, p. 38-39]. This can be combined with observations from
+                        Figure 7. In the middle, you can see the strongly increasing variance in the purple dot, which can be seen
+                        in all variograms. In the y-direction, the variograms show a long, constant development, while in the
+                        x-direction, the variograms show a significantly longer increase in variance, which is due to this ellipse.
+                        From this, can be concluded that zonal anisotropy is present with the direction of major continuity at
+                        azimuth of 0° (y axis or north-south) and the direction of minor continuity at an azimuth of 90° (x axis
+                        or east-west).
+                        <figure>
+                            <img src="../../img/project_geostatistics1/directional.png">
+                            <figcaption>Figure 7: Experimental variograms with different azimuth directions
+                            </figcaption>
+                        </figure> 
+                        <figure class="white-back">
+                            <img src="../../img/project_geostatistics1/variogramm_map.png">
+                            <figcaption>Figure 8: Variogram map for water capacity model
+                            </figcaption>
+                        </figure> 
+                        <h3>4.3 Fit the variogram model</h3>
+                        Different methods were used for the model fitting, which yielded to different results. First, models were
+                        fitted to the empirical variograms of directions of major and minor continuity. For this purpose, nine
+                        different models (Gaussian, Exponential, Matern, Stable, Rational, Circular, Spherical, SuperSpherical,
+                        JBessel) were fitted by least squares and the best fitting were selected. The best fitting model in major
+                        direction were the Matern model with a r² of 0.987 and in minor direction the Stable model with a
+                        r² of 0.995. The results as seen in Figure 9 yielded very good results. By printing the models it was
+                        also shown that the nugget effect was so close to zero in both models, that it can be assumed to be
+                        zero. Because of the zonal anisotropy described in the previous chapter, it is necessary to apply a nested
+                        model [Bardossy, 1997, p. 39]. For this purpose, a model with visual interpretation and with least squares
+                        was adapted to the two main axes. In case of visual interpretation the major continuity is modeled by
+                        a spherical structure and minor continuity is described by an exponential structure. The value for the
+                        nugget is set to zero as described before. For the range, the values described in the last chapter were
+                        used (10000; 25000). The resulting theoretic variograms can be seen in Figure 10, where the theoretical
+                        variogram shows a very good fit at an azimuth of 0°. The theoretical variogram at an azimuth of 90°
+                        shows a good fit at the beginning and at the end, but unfortunately not in the middle part. Last but not
+                        least least squares with the same models were used to fit the theoretical variogram, but here the two main
+                        axes are used in the same time to fit the model. The results are shown in Figure 11 and demonstrate
+                        that the Stable model is the best fitting model with an r² of 0.9. Visual interpretation shows that the
+                        resulting theoretical variograms do not match the empirical ones particularly well.
+                        <figure>
+                            <img src="../../img/project_geostatistics1/all.png">
+                            <figcaption>Figure 9: All fitted models by least squares and the best one chosen in direction of major and minor
+                                continuity
+                            </figcaption>
+                        </figure> 
+                        <figure>
+                            <img src="../../img/project_geostatistics1/fitted.png">
+                            <figcaption>Figure 10: The experimental and fitted variograms by visual interpretation in major and minor continuity
+                            </figcaption>
+                        </figure> 
+                        <figure>
+                            <img src="../../img/project_geostatistics1/fit_last.png">
+                            <figcaption>Figure 11: All fitted models by least squares to directions of major and minor continuity
+                            </figcaption>
+                        </figure> 
+                        <h2>5. Conclusion</h2>
+                        In summary, a lag distance of 1000m and a lag tolerance of 500m leads to the most interpretable empirical
+                        variograms. Examination of the directional variograms and the variogram map shows that the direction
+                        of major continuity was north-south with a range of 10km and a sill of 0.75, and the direction of minor
+                        continuity was east-west with a range of 25km and a sill of 0.9. When fitting the theoretical variograms,
+                        it was observed that the two nested models did not show outstanding results, but the result achieved by
+                        visual interpretation was slightly better. The individually fitted models, on the other hand, show a very
+                        good result with an r² close to one.
+                        <div class="bibliography">
+                            <h2>6. Bibliography</h2>
+                            [Bardossy, 1997] Bardossy, A. (1997). Introduction to geostatistics. Institute of Hydraulic Engineering,
+                            University of Stuttgart. <br>
+                            [Deutsch, 2015] Deutsch, J. (2015). Experimental variogram tolerance parameters. Geostatistics Lessons,
+                            http://www. geostatisticslessons. com/lessons/variogramparameters.<br>
+                            [Liddicoat et al., 2015] Liddicoat, C., Holmes, K., Maschmedt, D., Rowland, J., Searle, R., and Odgers,
+                            N. (2015). Soil and landscape grid digital soil property maps for south australia (3” resolution). [Online;
+                            accessed 22-November-2021].
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="left-footer">
+                <h2>About this page</h2>
+                <p>
+                    This is a portfolio page of <a href="mailto:me@moritzlucas.de" class="hover-a-white">Moritz Lucas</a>. 
+                    Here you can see some of his completed <a href="projects.html" class="hover-a-white">works</a>, read <a href="blog.html" class="hover-a-white">articles</a> and can get <a href="mailto:me@moritzlucas.de" class="hover-a-white">in touch</a>.
+                </p>
+            </div>
+            <div class="right-footer">
+                <h2>Formalities</h2>
+                <a href="impressum.html" class="hover-a-white">Impressum</a>
+            </div>
+            <div class="below-footer">
+                <div class="centri">
+                    <div class="btn-con" style="z-index: 10;">
+                        <a href="" class="main-btn">
+                            <span class="btn-text">Download CV</span>
+                            <span class="btn-icon"><i class="fas fa-download"></i></span>
+                        </a>
+                    </div>
+                    <a href="https://github.com/Moerizzy" target="_blank" class="contact-icon">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    
+                    <a href="https://www.linkedin.com/in/moritz-lucas-76797b1a4" target="_blank" class="contact-icon">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="mailto:me@moritzlucas.de" target="_blank" class="contact-icon">
+                        <i class="fas fa-at"></i>
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </footer>
+
+    <div class="controls">
+        <div class="control" data-id="home" >
+            <a href="../../index.html">
+                <i class="fas fa-home"></i>
+            </a>
+        </div>
+        <div class="control" data-id="about">
+            <a href="../about.html">
+                <i class="fas fa-user"></i>
+            </a>
+        </div>
+        <div class="control active-btn" data-id="projects">
+            <a href="../projects.html">
+                <i class="fas fa-book"></i>
+            </a>
+        </div>
+        <div class="control" data-id="blog">
+            <a href="../blog.html">
+                <i class="far fa-newspaper"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="theme-btn">
+        <i class="fas fa-adjust"></i>
+    </div>
+
+    <script src="../../app.js"></script>
+</body>
+</html>

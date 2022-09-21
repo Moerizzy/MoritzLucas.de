@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moritz Portfolio</title>
+    <link rel="icon" href="../../img/logo_erde.png">
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="main-content">
+    <main>
+        <section class="container active single_blog" id="impressum">
+            <div class="single-blog-container">
+                <div class="main-title">
+                    <h2>Interpolation of <span>Groundwater </span>level</h2>
+                    <h3>Comparison of the results of interpolation with <br> Inverse Distance Weighting, Kriging and Co-Kriging</h3>
+                    by Moritz Lucas
+                </div>
+                <div class="single-blog-content-con">
+                    <p>
+                        <h5></h5>
+                        <p class="highlight-text">
+                            In this project, the groundwater level within the city of Osnabrück is interpolated using the interpolation methods Inverse Distance Weighting (IDW) and Kriging. 
+                            Subsequently, it is investigated whether the addition of another variable by means of co-kriging, in this case the water levels of the rivers, 
+                            improves the interpolation result. The result is then compared visually and by means of the mean error and the root-mean-square error. 
+                            The result shows that the IDW interpolation already visually shows a worse result due to the "bulls-eye" effect and narrow contour lines. 
+                            In addition, the validation measures show better values for the kriging interpolation result. Co-kriging could not improve the result.
+                        </p>
+                        <h2>1. Introduction</h2>
+                        In this paper, the groundwater elevation within the city of Osnabrück is interpolated using the interpolation methods inverse distance weighting (IDW) and kriging. It is then investigated whether the addition of a further variable with the help of co-kriging, in this case the river levels, improves the interpolation result. The data basis for this is formed by point measurements of the groundwater level and the water levels within the urban area of Osnabrück. As a result, the work is structured as follows:
+                        First, the mode of operation and the underlying calculations of the two interpolation methods are briefly explained and the influence of the choice of parameters on the results is discussed. Subsequently, the groundwater elevation is interpolated with the help of the methods and special attention is paid to the choice of parameters and the subsequent validation. Subsequently, a possible correlation between the groundwater elevation and the river levels is investigated with the help of co-riging and here, too, special emphasis is placed on parameter selection and validation. Finally, the two interpolation methods and the resulting interpolations are compared and checked for accuracy.
+                        <h2>2. The interpolation Methods</h2>
+                        In the following, the two interpolation methods used in this work, IWD and Kriging, are explained. The basic idea, the calculation method of the interpolation, the parameters to be selected and their influence on the interpolation result and possible problems and difficulties of the methods are described. The illustrations used in this chapter come from the seminar script, so the source has not been indicated.
+                        <h3>2.1 Inverse Distance Weightening (IWD)</h3>
+                        The deterministic interpolation method IWD is based on the basic assumption that values at locations that are close together have a stronger correlation than values at locations that are further away. The decisive influencing factor in the calculation of values at unsampled locations is the inverse of the distance, i.e. the further a measured value is from the unsampled point, the smaller its influence on the interpolated value at this point (Achilleos 2011, p. 284-285).<br>
+                        These considerations result in the following formula for calculating values at the unsampled point <i>p</i>:
+
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/IWD_formula.png">
+                        </figure>
+                        In this context, the influence of the parameters n and k can be discussed when carrying out the interpolation procedure. The parameter n describes the number of neighbouring sampled locations that are included in the calculation. This is equivalent to the size of the catchment area and is to be determined depending on the question. The parameter k controls the weighting of the distance. The higher this exponent is chosen, the lower the influence of more distant points on the interpolation of Zp. In most cases, k = 2 is selected (Lange 2020, p. 419).
+                        This interpolation procedure is quick to perform, easy to understand (Babak and Deutsch 2009, pp. 550-552). Nevertheless, there are some error-pronenesses. One of them is isolated sampled points around which concentric areas with the same value form, this is called the "bulls eye effect" (Achilleos 2011, pp. 284-285). Another weakness is that the weighting of the values is calculated solely from the distance and the weighting of this, ignoring the fact that different spatially distributed data also have different spatial correlations and that this spatial correlation can also differ within the interpolated area (Lange 2020, p. 420). The following chapter describes an interpolation method that solves this problem.
+                        <h3>2.2 Kriging</h3>  
+                        The statistical interpolation method is based on the same basic assumption as IWD interpolation, that values of near locations correlate more strongly than values of more distant locations. This procedure also works with weights when calculating the interpolated values, but the calculation of these weights is not solely based on the distance of the points, but also on the variance of the values in relation to the distance (Lange 2020, p. 420).
+                        To carry out this procedure, the first step is to create an empirical semivariogram. A diagram is created in which the distance is plotted on the x-axis and the halved squared difference in measured values is plotted on the y-axis of all pairs of points. Then these halved squared measurement differences are averaged within distance classes, so-called "lags". <br>
+                        The mean values for these "lags" are calculated as follows: 
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/Kriging_formula1.png">
+                        </figure>
+                        Subsequently, a theoretical semivariogram is estimated using a continuous function that best describes the empirical semivariogram. In this context, there are some important technical terms to clarify:
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/kriging_sill.gif">
+                            <figcaption><strong>Range:</strong> Distance at which values correlate<br>
+                                <strong>Sill:</strong> Threshold value of the semivariogram <br>
+                                <strong>Nugget:</strong> Intersection with the y-axis - is due to measurement error</figcaption>
+                        </figure>
+                        With the help of the theoretical semivariogram and the estimated function, the weights can now be calculated, which are used for the interpolation of values of unsampled locations. The weights for calculating the estimated value of each unsampled point are determined newly.
+                        For this calculation, the measurement locations that occur within the distance of the range are used. In order to calculate the estimated value at the unsampled location from the calculated weights, the following formula is used:
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/Kriging_formula2.png">
+                        </figure>
+                        This concludes the calculation using Kriging. The advantage of this procedure is that a variance and a confidence interval can be determined for each estimated value and thus the quality of the estimate can be determined.
+                        Depending on the application, there are different types of kriging: Simple and Ordinary kriging, Co-Kriging, Universal Kriging and Disjunctive Kriging (Oliver and Webster 1990, pp. 315-317). In this paper, we will limit ourselves to the application of ordinary and co-kriging, which is why only these will be explained in more detail below.
+                        The basic assumption with Ordinary Kriging is that the mean value remains constant over the entire area to be interpolated. However, this mean value is not known and must be estimated. In many applications this assumption is not correct, in which case other types of kriging must be used (Cressie 1988, p. 406-408).
+                        In the previous approach, only one variable is used for interpolation. For co-kriging, different variables are used and the extent to which they correlate is examined. The correlation of a main variable with the other secondary variables is examined and this information is included in the interpolation of the main variable (Li and Heap 2008, pp. 16-17).
+                        <h2>3. Interpolation of groundwater levels above sea level</h2>
+                        In the following subchapters, an interpolation of the groundwater heights above sea level in the city of Osnabrück is carried out using the IWD and Ordinary Kriging interpolation methods. Particular attention is paid to the choice of parameters and the validation of the results. In order to start the interpolation, the groundwater elevation above sea level had to be calculated within the attribute table of the initial data. For this purpose, the distance to the ground was subtracted from the ground elevation above sea level and added to another column of the attribute table.
+                        <h3>3.1 Interpolation with IWD</h3>
+                        The interpolation is carried out using the "Geostatistical Wizard" in ArcGis PRO. This allows a change of parameters with direct insight into the validation measures of the leave-one-out cross-validation.
+                        <h4>3.1.1 Parameter selection</h4>
+                        In order to select the parameters as favourably as possible and thus minimise errors, a procedure was chosen in which the various parameters were tested and then the validation measures were compared with each other (Li and Gao, p. 370-372). 
+                        First, the exponent (power) was increased from 1 to 10; within this interval, the values for "power" can be considered valid (Li and Gao, p. 372). 
+                        The number of neighbours was set to the default value of 15. 
+                        <figure class="floating-fig-right">
+                            <img src="../../img/project_grundwasserOsna/IWD_report.png" alt="" class="img-float">
+                            <figcaption>Figure 1: Method Report of the IDW Interpolation</figcaption>
+                        </figure>
+                        The result can be seen in Figure 3 and shows that the validation measures Mean-Error (ME) and Root-Mean-Square-Error (RMSE) decrease with increasing "power" and thus the quality of the interpolation is increased. 
+                        Consequently, the value for "power" is set to 10. Then the optimal number of neighbours is determined. 
+                        To do this, the value for "power" is taken from the previous considerations and settings for the number of neighbours between 5-20 are tested (see Figure 2). 
+                        This shows that the optimal number of neighbours is 12, as this is where the more meaningful RMSE is lowest.
+                        <div class="two-images">
+                            <figure>
+                                <img src="../../img/project_grundwasserOsna/IWD_power2.png" alt="">
+                                <figcaption>Figure 2: Validation measures of IDW interpolation at different values for the number of neighbours</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="../../img/project_grundwasserOsna/IWD_power1.png" alt="">
+                                <figcaption>Figure 3: Validation measures of the IDW interpolation at different values for "power" </figcaption>
+                            </figure>
+                        </div>
+                        <h4>3.1.2 Presentation of results</h4>
+                        With the interpolated groundwater elevations obtained from the previous chapter, a representation of the results was made in the form of a map (see Figure 4). For this purpose, the IWD interpolation was exported into a Contour multipolygon shape file and a manual classification in 5m steps was carried out.
+                        <figure class="white-back">
+                            <img src="../../img/project_grundwasserOsna/IWD.png" alt="">
+                            <figcaption>Figure 4: Interpolation of groundwater levels in Osnabrück with IWD</figcaption>
+                        </figure>
+                        <h4>3.1.3 Validation of the results</h4>
+                        <figure class="floating-fig-right" style="max-width: 500px;">
+                            <img src="../../img/project_grundwasserOsna/IWD_validation.png" alt="" class="img-float">
+                            <figcaption>Figure 5: "leave-one-out" cross-validation of the IWD interpolation</figcaption>
+                        </figure>
+                        Finally, the result is validated. Part of the validation has already been done in the parameter selection. Only a final consideration follows here. For the validation measures ME and RMSE, the following values can be considered in conclusion: <br>
+                        <li>
+                            <strong><ul>ME: 	&nbsp&nbsp&nbsp&nbsp	-0,2227</ul></strong>
+                            <strong><ul>RMSE: 	&nbsp	2,8436</ul></strong>
+                        </li>
+                        
+                        The ME is of less importance in this context because there are both positive and negative errors and they cancel each other out. The RMSE is to be considered in connection with the span of the values and this is between 56 - 113m. The RMSE is quite high for such a small span. This is probably due to isolated extreme error values that occurred in small numbers. As can be seen in Figure 5, the majority of the data has only a very small and therefore negligible error value. The overall error trend is very small, as can be seen from the small offset of the regression line and reference line.
+                        <h3>3.2 Interpolation with Kriging</h3>
+                        The interpolation was performed with Ordinary Kriging using the "Geostatistical Wizard" in ArcGis PRO. This allows a change of the parameters with direct insight into the validation measures of the leave-one-out cross validation.
+                        <h4>3.2.1 Parameter selection</h4>
+                        The parameters were selected with the help of the ArcMap help pages. At the beginning, the size and number of lags was determined. For this purpose, the tool "Mean Nearest Neighbour" was used to determine the average distance of the measurement locations. 
+                        The resulting average distance of 131.08m was used as the size of the lags (ESRI 2020a). 
+                        <figure class="floating-fig-right" style="max-width: 400px;">
+                            <img src="../../img/project_grundwasserOsna/Kriging_report.png" alt="" class="img-float">
+                            <figcaption>Figure 6: Method Report of Kriging Interpolation</figcaption>
+                        </figure>
+                        The following rule of thumb was used to determine the number of lags: Half the distance of the farthest sampled points should equal the lag size multiplied by the number of lags (ESRI 2020a). 
+                        In the present data, the furthest distance was 14km and as a result the number of lags was set to 53. Then the model that best fits the semivariogram was sought. 
+                        
+                        Since an optical fit did not yield very useful validation measures, all models were tested and the validation measures were compared with each other (ESRI 2020b). 
+                        The exponential model was found to have the lowest error values. The resulting semivariogram can be seen in Figure 7. The optimal number of maximum neighbours was then determined. 
+                        Again, different possibilities were tested and the different validation measures were compared. The value 7 turned out to be optimal. 
+                        All other parameters and selection options to be set were left at the default setting. 
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/kriging_semivariogramm.png" alt="">
+                            <figcaption>Figure 7: Semivariogram of Kriging Interpolation</figcaption>
+                        </figure>
+                        <h4>3.2.2 Presentation of results</h4>
+                        With the interpolation obtained from the previous chapter, a result representation in the form of a map was made (see Figure 8). For this purpose, the kriging interpolation was exported into a contour multipolygon shape file and a manual classification in 5m steps was made.
+                        <figure class="white-back">
+                            <img src="../../img/project_grundwasserOsna/Kriging.png" alt="">
+                            <figcaption>Figure 8: Interpolation of groundwater levels in Osnabrück with ordinary Kriging</figcaption>
+                        </figure>
+                        <h4>3.2.3 Validation of the results</h4>
+                        n concluding consideration of the validation measures, the Root-Mean-Square Standardised Error (RMSSE) and the comparison of RMSE and Average Standard Error (ASE) are of particular importance.
+                        The statements on the Mean Error and the RMSE are similar to those of the previous validation. 
+                        <figure class="floating-fig-right" style="max-width: 400px;">
+                            <img src="../../img/project_grundwasserOsna/Kriging_validation.png" alt="" class="img-float">
+                            <figcaption>Figure 9: Validation measures of Kriging interpolation </figcaption>
+                        </figure>
+                        The Mean Standardised Error approaches 0 and thus shows a very low standard deviation of the interpolated values. 
+                        The RMSSE slightly exceeds the value of 1, but in this case is the best possible approximation. 
+                        A comparison of RMSE and ASE shows that they differ quite significantly and thus the variability of the data could not be represented optimally. More precisely, the variability of the data tends to be underestimated, which can be seen in an RMSSE above 1 and an ASE larger than RMSE. Despite this criticism, it can be seen in Figure 10 that a large proportion of the values have a low error value.
+                        Only a small part of the values show strong deviations. The overall error trend is also low, as can be seen from the small offset of the regression line and the reference line.
+                        <figure class="white-back">
+                            <img src="../../img/project_grundwasserOsna/kriging_crossValidation.png" alt="">
+                            <figcaption>Figure 10: "leave-one-out" cross-validation of the Kriging interpolation </figcaption>
+                        </figure>
+                        <h2>4. Correlation between groundwater levels and river levels</h2>
+                        To investigate whether adding another variable improves the interpolation result, an interpolation with Ordinary Co-Kriging was performed using the "Geostatistical Wizard" in ArcGis PRO. This allows a change of the parameters with direct insight into the validation measures of the leave-one-out cross-validation. Point measurements of river levels were added as an additional variable.
+                        <h3>4.1 Parameter selection</h3>
+                        The procedure for selecting the parameters was similar to the procedure for selecting the parameters for ordinary kriging in the previous chapter. At the beginning, the size and number of lags were determined. For this, the two shape files of the groundwater levels and river gauges had to be connected. As a result, the size and number of lags were calculated as in the previous parameter selection. The result of this calculation was 181.518 for the size of the lags and 39 for the number of lags. 
+                        Subsequently, the model best fitting the semivariogram was sought. Since an optical fit yielded few meaningful validation measures here, all models were tested through and the validation measures were compared with each other (ESRI 2020b). Again, the exponential model was found to have the lowest error values. The two resulting semivariograms can be seen in Figures 12 and 13. The optimal number of maximum neighbours was then determined.
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/co-kriging_report.png" alt="">
+                            <figcaption>Figure 11: Method report of the Co-Kriging interpolation</figcaption>
+                        </figure>
+                        Again, different possibilities were tested and the different validation measures were compared. The value 6 turned out to be optimal. All other parameters and selection options to be set were left at the default setting. 
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/co-kriging_semivariogram_groundwater.png" alt="">
+                            <figcaption>Figure 12: Semivariogram of the Co-Kriging interpolation with the variable of groundwater level </figcaption>
+                        </figure>
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/co-kriging_semivariogram_riverlevels.png" alt="">
+                            <figcaption>Figure 13: Semivariogram of the Co-Kriging interpolation with the variable of water levels</figcaption>
+                        </figure>
+                        <h3>4.2 Presentation of results</h3>
+                        With the interpolation obtained from the previous chapter, a result representation in the form of a map was made (see Figure 14). For this purpose, the co-riging interpolation was exported into a contour multipolygon shape file and a manual classification in 5m steps was made.
+                        <figure class="white-back">
+                            <img src="../../img/project_grundwasserOsna/Co-kriging.png" alt="">
+                            <figcaption>Figure 14: Interpolation of groundwater elevations in Osnabrück with Co-Kriging</figcaption>
+                        </figure>
+                        <h3>4.3 Validation of the results</h3>
+                        In the final consideration of the validation measures, the Root-Mean-Square Standardised Error (RMSSE) and the comparison of RMSE and Average Standard Error (ASE) are of particular importance. 
+                        <figure class="floating-fig-right" style="max-width: 400px;">
+                            <img src="../../img/project_grundwasserOsna/Co-kriging_validation.png" alt="" class="img-float">
+                            <figcaption>Figure 15: Validation measures of co-riging interpolation</figcaption>
+                        </figure>
+                        The Mean Standardised Error approaches 0 and thus shows a very low standard deviation of the interpolated values. The RMSSE slightly exceeds 1, but in this case is the best possible approximation. A comparison of RMSE and ASE shows that they differ quite significantly and thus the variability of the data could not be represented optimally. More precisely, the variability of the data tends to be underestimated, which can be seen in an RMSSE above 1 and an ASE larger than RMSE. Despite this criticism, it can be seen in Figure 16 that a large proportion of the values have a low error value. Only a small part of the values show strong deviations. The overall error trend is also low, as can be seen from the small offset between the regression line and the reference line.
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/Co-kriging_Crossvalidation.png" alt="">
+                            <figcaption>Figure 16: Leave-one-out cross-validation of the Co-Kriging interpolation</figcaption>
+                        </figure>
+                        <h2>5. Comparison of interpolation methods</h2>
+                        In the following, the three previous interpolation methods are compared with each other using the validation measures and visual interpretation of the interpolation results. An overview of the results and validation measures can be found in Figure 17.
+                        Particularly strong differences are noticeable between the Kriging interpolations and the IDW interpolation. On a visual level, when comparing the result representations, clear differences can be seen in the southern part of the study area. In the IDW interpolation in particular, the area with the highest groundwater elevations is more extensive and shows narrow contour lines. In contrast, in both Kriging interpolations, the area with the highest groundwater elevations has been interpolated significantly smaller and shows a flatter gradient due to the more distant contour lines, which seems more realistic in relation to the feature of groundwater elevations under investigation. The phenomenon of narrow contour lines in the IWD interpolation can also be seen in the eastern part of the study area. In addition, the "bulls-eye effect" described in chapter 2.1 is found several times within the IWD interpolation result and is characterised by almost circular contour lines, which can be seen in the east, south-east and south of the representation. The difference in the validation measures between the Kriging interpolations and the IWD interpolation turns out to be small with regard to the range of values of the data basis (56 - 113m). The focus here is on the RMSE due to its resistance to cancellation of positive and negative error values. The difference is small, but still shows that the result of the Kriging interpolations has less error values than the IWD interpolation. 
+                        The difference between the two Kriging interpolations turns out to be rather marginal. In the visual comparison of the results, differences can be seen in the north-eastern and south-western parts. In addition, the two interpolations partly show staircases, i.e. contour lines that run in a staircase-like manner. This phenomenon is particularly evident in the co-riging interpolation. An examination of the validation measures shows that they differ only slightly. The squared validation measures RMSE and RMSSE show that the total error value in the ordinary kriging interpolation is slightly lower. 
+                        This suggests that adding the river levels as a second variable in the co-riging interpolation did not improve the result. Furthermore, the comparison with the IWD interpolation showed that it gives a worse result than the kriging interpolation on a visual level and through the validation measures, making the kriging interpolation the best interpolation method for this case study.
+                        <figure>
+                            <img src="../../img/project_grundwasserOsna/Interpolationsvergleich.png" alt="">
+                            <figcaption>Figure 17: Interpolation results and validation measures of the performed interpolation procedures</figcaption>
+                        </figure>
+                        <div class="bibliography">
+                            <h2>6. Bibliography</h2>
+                                Achilleos, G. A. (2011): The Inverse Distance Weighted interpolation method and error propagation mechanism–creating a DEM from an analogue topographical map. In: Journal of Spatial Science 56 (2), S. 283–304.<br>
+                                Babak, Olena; Deutsch, Clayton V. (2009): Statistical approach to inverse distance interpolation. In: Stochastic Environmental Research and Risk Assessment 23 (5), S. 543–553.<br>
+                                Cressie, Noel (1988): Spatial prediction and ordinary kriging. In: Mathematical geology 20 (4), S. 405–421.<br>
+                                ESRI (2020a): Choosing a lag size: ESRI. Online verfügbar unter https://desktop.arcgis.com/de/arcmap/10.4/extensions/geostatistical-analyst/choosing-a-lag-size.htm, zuletzt geprüft am 30.12.20.<br>
+                                ESRI (2020b): Fitting a model to the empirical semivariogram: ESRI. Online verfügbar unter https://desktop.arcgis.com/de/arcmap/10.4/extensions/geostatistical-analyst/fitting-a-model-to-the-empirical-semivariogram.htm, zuletzt geprüft am 30.12.2020.<br>
+                                Lange, Norbert de (2020): Geoinformatik in Theorie und Praxis: Grundlagen von Geoinformationssystemen, Fernerkundung und digitaler Bildverarbeitung: Springer-Verlag.<br>
+                                Li, J.; Heap, A. D. (2008): Spatial interpolation methods: a review for environmental scientists. In: Geoscience Australia, Record. Geoscience Australia, Canberra.<br>
+                                Li, Zhanglin; Gao, Jianying: Intelligent optimization on power values for inverse distance weighting. In: 2013 International Conference on Information Science and Cloud Computing Companion: IEEE, S. 370–375.<br>
+                                Oliver, Margaret A.; Webster, Richard (1990): Kriging: a method of interpolation for geographical information systems. In: International Journal of Geographical Information System 4 (3), S. 313–332.
+
+                        </div>
+
+                    </p>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="left-footer">
+                <h2>About this page</h2>
+                <p>
+                    This is a portfolio page of <a href="mailto:me@moritzlucas.de" class="hover-a-white">Moritz Lucas</a>. 
+                    Here you can see some of his completed <a href="projects.html" class="hover-a-white">works</a>, read <a href="blog.html" class="hover-a-white">articles</a> and can get <a href="mailto:me@moritzlucas.de" class="hover-a-white">in touch</a>.
+                </p>
+            </div>
+            <div class="right-footer">
+                <h2>Formalities</h2>
+                <a href="impressum.html" class="hover-a-white">Impressum</a>
+            </div>
+            <div class="below-footer">
+                <div class="centri">
+                    <div class="btn-con" style="z-index: 10;">
+                        <a href="" class="main-btn">
+                            <span class="btn-text">Download CV</span>
+                            <span class="btn-icon"><i class="fas fa-download"></i></span>
+                        </a>
+                    </div>
+                    <a href="https://github.com/Moerizzy" target="_blank" class="contact-icon">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    
+                    <a href="https://www.linkedin.com/in/moritz-lucas-76797b1a4" target="_blank" class="contact-icon">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="mailto:me@moritzlucas.de" target="_blank" class="contact-icon">
+                        <i class="fas fa-at"></i>
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </footer>
+
+    <div class="controls">
+        <div class="control" data-id="home" >
+            <a href="../../index.html">
+                <i class="fas fa-home"></i>
+            </a>
+        </div>
+        <div class="control" data-id="about">
+            <a href="../about.html">
+                <i class="fas fa-user"></i>
+            </a>
+        </div>
+        <div class="control active-btn" data-id="projects">
+            <a href="../projects.html">
+                <i class="fas fa-book"></i>
+            </a>
+        </div>
+        <div class="control" data-id="blog">
+            <a href="../blog.html">
+                <i class="far fa-newspaper"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="theme-btn">
+        <i class="fas fa-adjust"></i>
+    </div>
+
+    <script src="../../app.js"></script>
+</body>
+</html>

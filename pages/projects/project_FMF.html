@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- 
+        - Links Bibliography
+        - Checken ob auf alle Figures richtig verwiesen wird (im Text) 
+     -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moritz Portfolio</title>
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="main-content">
+    <main>
+        <section class="container active single_blog" id="impressum">
+            <div class="single-blog-container">
+                <div class="main-title">
+                    <h2>Comparison <span>RF and SVM</span></h2>
+                    <h3>Comparison of Random Forest and Support Vector Maschine based on a broad validation</h3>
+                    by Moritz Lucas
+                </div>
+                <div class="single-blog-content-con">
+                    <p>
+                        <h2 class="main-heading">Abstract</h2>
+                        <p class="highlight-text">
+                            The comparison of the two classifiers Random Forest (RF) and Support Vector Machine (SVM) was carried out by performing a land cover classification in equatorial Africa. 
+                            The focus was on an area between the volcanoes Nyiragongo, Nyamuragira and Mont Mikeno in the border region of DR Congo, Rwanda and Uganda. 
+                            The data basis was a satellite image from Sentinel-2A from the summer of 2018, on which FMASK was subsequently applied. Afterwards, 
+                            training data was collected and the two scenes were classified once with RF and SVM using Python and the sklearn package. 
+                            The results were then validated according to Olofsson et al. (2014). 
+                            The RF classifier showed an overall accuracy of 75.94 % +- 2.73 % and the SVM of 80.75 % +- 2.54 %. 
+                            Particularly for small classes with few training areas, the SVM showed a better results.
+                        <p>
+                        <figure>
+                            <img src="../../img/project_FMF/RGB.jpeg">
+                            <figcaption><strong>Figure 1:</strong> Mont Mikeno and lava beds captured by Sentinel-2A in summer 2018</figcaption>
+                        </figure>
+
+                        <h2>1. Introduction</h2>
+                        Land cover analyses are an important tool for quickly recording changes in the environment over large areas, e.g. to monitor climate change, to monitor agricultural subsidies or to provide a basis for urban planning. In this context, land cover maps, by being optimised for different applications, provide the basis for the analysis of airborne and satellite imagery data and the use for the topics mentioned above (Dabija et al. 2021, pp. 1-2). The creation of these maps is a challenging task for which various machine learning algorithms are used (Sheykhmousa et al. 2020a, p. 6308). Among them, Random Forest (RF) and Support Vector Machines (SVM) emerged as the most widely used classification algorithms in recent decades (Thanh Noi and Kappas 2018, p. 2). In addition to the complexity of the Earth's surface and the adaptation of the classification algorithms to their respective requirements, obtaining reference data to train the algorithms and validate the results is a particular challenge in performing land cover analysis (Sheykhmousa et al. 2020a, p. 6308). The aim of this work is to evaluate what results the RF and SVM classification algorithms can achieve with a small amount of training data. The following question arises:
+                        What results can be achieved when performing a land cover analysis with classification algorithms Random Forest and Support Vector Machine with a small amount of training data?
+                        To answer these questions, a land cover analysis is performed on Sentinel-2A data in a study area in eastern Congo with a limited number of training data. This requires the following procedure: First, the study area and the data basis are described. Then the methodology is presented, explaining the pre-processing of the satellite images and the collection and distribution of the reference data. This is followed by a description of the classification algorithms used, the tuning of the parameters and the validation procedure. The results are then presented and discussed with reference to the literature. Finally, the research question is answered.
+                                 
+                        <h2>2. Study area</h2>
+                        <figure class="floating-fig-right">
+                            <img src="../../img/project_FMF/study_area.jpeg" class="img-float" style="max-width: 500px;">
+                            <figcaption><strong>Figure 2:</strong> True colour composite of the study area and surroundings.</figcaption>
+                        </figure>
+                        The study area is located between 1° and 2° south latitude and 29° and 30° east longitude with an extension of 20.16 km east-west and 18.4 km north-south within the province of North Kivu in the Democratic Republic of Congo (DRC). This is the border region between the DR Congo, Rwanda and Uganda. Due to its proximity to the equator, the climate is characterised by year-round high temperatures and high rainfall (Verbeken et al., p. 13). It is a very mountainous region that has been particularly influenced by volcanic activity. Especially the western part of the study area is strongly influenced by the two volcanoes Nyiragongo and Nyamuragira. These are the most active volcanoes in Africa. Frequent eruptions have destroyed large parts of the vegetation and large parts of the area are covered with lava fields (Verbeken et al., pp. 13-14). In the southeast are the foothills of the southern Virunga National Park, which is recognisable by the continuous forestation in contrast to the surrounding cultivated land. Within the national park, lies Mount Mikeno, which is 4437 metres high and part of the Virunga mountain range. In the north-east and south-central regions, the area is heavily influenced by human activity, resulting in increased settlement and agricultural land (Kayijamahe et al. 2020, pp. 146-147).                        
+                        <h2>3. Data basis</h2>
+                        The data basis for this work is a Sentinel-2A scene. The Earth observation satellite Sentinel-2A is part of the Copernicus Earth observation programme, which was launched by the European Space Agency (ESA) to ensure continuous observation of the environment. The satellite's image sensor delivers its information in 10 spectral channels covering the visible, near infrared (NIR) and shortwave infrared (SWIR) wavelength ranges. The spatial resolution of these bands is 10-20 m. In addition, three narrow-band spectral channels with 60 m spatial resolution are available for measuring atmospheric properties. The programme provides data from a range between -56 and +84 degrees latitude with a swath width of 290 km (van der Werff and van der Meer 2016, pp. 1-2). The temporal resolution together with the identical twin satellite Sentinel-2B is five days and up to two days in northern and southern parts of the Earth (Segarra et al. 2020, p. 4). The scene used in this paper was acquired on 12.06.2018 (tile number: T35MQU) and for land cover analysis the bands except band 8a with 10-20 m spatial resolution are used (Sentinel-2 bands: 2, 3, 4, 5, 6, 7, 8, 11, and 12).
+                        <h2>4. Methodology</h2>
+                        In the following, the steps for the pre-processing of the data basis are presented and then the functioning of the two classification algorithms RandomForest (RF) and Support Vector Machines (SVM) are briefly described and the parameter search is dealt with.
+                        <h3>4.1 Pre-processing</h3>
+                        The following section describes the preparation of the Sentinel-2A data for analysis and discusses the collection and distribution of the reference data.
+                        <h4>4.1.1 Pre-processing of the Sentinel-2A scene</h4>
+                        The Sentinel-2A scene used is a Level-2A product, which provides an orthoimage with corrected Bottom-Of-Atmosphere (BOA) reflectivity. This was processed, already contains an atmospheric correction and possible pixel errors were removed (ESA 2021). In addition, the scene was cropped to the study area. Clouds and cloud shadows were masked out using FMask and then clouds and cloud shadows were set to nodata (Zhu et al. 2015, pp. 269-272). In addition, resampling to 10 m spatial resolution was performed on spectral bands 5, 6, 7, 11, and 12 to produce a uniform resolution of all spectral bands.
+                        <h4>4.1.2 Training and test pixels and the choice of land cover classes</h4>
+                        The training pixels were collected manually by the seminar participants using visual interpretation. 
+                        These were processed by removing the cloud and shadow classes and applying the mask created by FMask to the rasterised training data. 
+                        The test areas were distributed within the study area using stratified random sampling as recommended by Olofsson et al. 2014, followed by manual interpretation using high-resolution Google Earth Pro aerial imagery. The reference data used varies in time between 2015 and 2018, but provides significantly higher resolution than the scene being classified. 
+                        In the case of mixed pixels or uncertainties, the class that was predominantly present in the surroundings was selected. 
+                        
+                        Thereby, the classes settlement area and open ground accounted for 13 and 17 test pixels, respectively, so that test pixels still had to be added manually here to achieve an acceptable standard error (Olofsson et al. 2014, p. 55). The choice of land cover classes was plain with the exception of the volcanic subsoil. As this covers a non-negligible area within the study area, a separate class was created for it. 
+                        Another special feature is the lack of a water land cover class, but since no relevant water areas were discovered even after closer examination of the study area, this class could be dispensed with.
+                        <figure class="full-width">
+                            <table>
+                                <tr class="first-line">
+                                    <td>Class</td>
+                                    <td>Class number</td>
+                                    <td>Number of training pixels</td>
+                                    <td>Number of test pixels</td>
+                                </tr>
+                                <tr>
+                                    <td>Volcanic bedrock</td>
+                                    <td>1</td>
+                                    <td>175</td>
+                                    <td>72</td>
+                                </tr>
+                                <tr>
+                                    <td>Settlement area</td>
+                                    <td>2</td>
+                                    <td>135</td>
+                                    <td>30</td>
+                                </tr>
+                                <tr>
+                                    <td>Bare ground</td>
+                                    <td>3</td>
+                                    <td>179</td>
+                                    <td>27</td>
+                                </tr>
+                                <tr>
+                                    <td>Agriculture</td>
+                                    <td>4</td>
+                                    <td>161</td>
+                                    <td>109</td>
+                                </tr>
+                                <tr>
+                                    <td>Sparse vegetation</td>
+                                    <td>5</td>
+                                    <td>161</td>
+                                    <td>139</td>
+                                </tr>
+                                <tr>
+                                    <td>Forest</td>
+                                    <td>6</td>
+                                    <td>155</td>
+                                    <td>349</td>
+                                </tr>
+                                <tr class="first-line">
+                                    <td>Total</td>
+                                    <td></td>
+                                    <td>966</td>
+                                    <td>726</td>
+                                </tr>
+                            </table>
+                            <figcaption><strong>Table 1:</strong> Overview of land cover classes and distribution of training and test pixels</figcaption>
+                        </figure>
+
+                        <h3>4.2 Classification methods</h3>
+                        In the following, the functionality of the classification algorithms Support Vector Machines (SVM) and Random Forest (RF) used for the land cover analysis is described and the tuning of the parameters is discussed.
+                        <h4>4.2.1. Support Vector Machines</h4>
+                        The SVM is a supervised non-parametric classifier. It is a binary classifier that uses training regions to produce the best possible class boundary within the feature space. This class boundary is called hyperplane in this context and is later used to classify the unseen pixels. It is placed in such a way that the distance (margin width) to the training regions that lie at the edges of the classes (support vectors) is maximised (Pal 2005, pp. 218-219). 
+                        <figure class="floating-fig-left">
+                            <img src="../../img/project_FMF/svm.jpg" class="img-float">
+                            <figcaption><strong>Figure 3:</strong> Example of a linear support vector machine (Mountrakis et al. 2011, p. 248)</figcaption>
+                        </figure>
+                        Figure 3 shows a simple form of SVM, where the hyperplane is a linear class boundary. Since most classifications in remote sensing neither require a binary classification nor are easily separable by a linear hyperplane, mechanisms have been developed to deal with these more complex problems. The kernel trick is often used to produce a non-linear hyperplane, where non-linear problems are separated using mathematical functions in a higher dimensional space and then computed back into the two-dimensional space (Sheykhmousa et al. 2020b, pp. 6310-6312). The choice of kernel has a high impact on the classification. To deal with questions that require more than two classes, methods such as one-against-all or one-against-one are used (Mountrakis et al. 2011, p. 248).
+                        Because the hyperplane is formed using only the support vectors, SVMs can provide high accuracies compared to other classifiers with few training regions, which they find difficult to access in most remote sensing issues (Mountrakis et al. 2011, p. 256). Moreover, SVMs tend to neither underfit nor overfit, usually finding a suitable middle ground between the accuracy that can be achieved by the training areas and a generalisation of the data (Mountrakis et al. 2011, p. 247). In contrast, errors in the data lead to a drastic decrease in the accuracy of the classification (Maulik and Chakraborty 2017, p. 47).
+                        <h5>4.2.1.1 Tuning of parameters</h5>
+                        When choosing the kernel, the radial basis function (RBF) of the SVM classifier is usually the best choice for land cover classifications as it gives good results (Thanh Noi and Kappas 2018, p. 7). When performing classification with the SVM, the trade-off parameter (C) and the kernel width parameter (γ) need to be adjusted, especially because there are no established assumptions in the selection and the result strongly depends on the choice of parameters (Mountrakis et al. 2011, p. 256; Pal 2005, p. 219). The parameter C determines the number of allowed misclassifications within the training areas when the margin width is increased. The parameter (γ) influences the shape of the class-separating hyperplane (Thanh Noi and Kappas 2018, p. 7). In order to find the appropriate parameters for the land cover analysis, a grid search was carried out. For this, the first search was conducted in a large range of values (see Figure 4 left) and then narrowed down with a second gridsearch in a narrower range of values. The parameters γ = 0.007 and C = 240 were chosen for the classification.
+                        <figure>
+                            <img src="../../img/project_FMF/gridsearchSVM1.jpg" style="width: 50%;">
+                            <img src="../../img/project_FMF/gridsearchSVM2.jpg" style="width: 50%;">
+                            <figcaption> 
+                                <strong>Figure 4:</strong> Left: Plot of the gridsearch result for the parameters C and γ in a wide range of values. 
+                                Right: Plot of the gridsearch result for the parameters C and γ in a narrower range of values.
+
+                            </figcaption>
+                        </figure>
+                        <h4>4.2.2. Random Forest</h4>
+                        The Random Forest (RF) is a non-parametric supervised classifier ensemble. It consists of a combination of decision trees, each of which receives a random set of training regions (bagging). The decision trees are then trained, with a random selection of the features available to the classifier taking place at each node, in order to decide on the feature that provides the highest information gain. This information gain is calculated with the help of the Gini index or entropy, which means that the purer the classes are divided according to a node, the higher the information gain (Sheykhmousa et al. 2020b, pp. 6312-6313). Subsequently, the unseen data pass through the decision trees and in the end a class decision is made for each pixel. Among all classifiers, a majority decision is used to determine a final class decision. When training the decision trees, one allows them to be fully trained; since one uses a large number of trees, this does not lead to overfitting (Pal 2005, p. 218). In addition, the RF can deliver good results much better than other classification algorithms with many features without the Hugh Phenomena occurring (Belgiu and Drăguţ 2016, pp. 29-30). In addition, the RF offers the possibility of obtaining information about the classification before validation through two measures. Bagging makes it possible to perform an internal cross-validation (out-of-bag-error) with the help of the remaining training areas, which simplifies the assessment of the quality of the classification. In addition, the variable Importance can be output, which makes a statement about the importance of a variable in the classification process (Belgiu and Drăguţ 2016, p. 25).
+                        <h5>4.2.2.1. Tuning of parameters</h5>
+                        When performing an RF, two parameters need to be set. The number of decision trees (ntree) and the number of selected features at each node (mtry) (Thanh Noi and Kappas 2018, p. 7). It has been shown that even the default settings of these parameters can produce good results, with 500 usually chosen for ntree and the root of the input features chosen for mtry (Duro et al. 2012, pp. 48-50; Belgiu and Drăguţ 2016, p. 25). Despite these findings, a gridsearch was used to determine the optimal parameters ntree and mtry for the classification. The results obtained could not show any significant differences in accuracy (see Figure 5 and 6). When choosing the measure of purity, entropy could show slight improvements in accuracy compared to the Gini index. Since no salient parameters could be found by means of gridsearch, the parameters ntree were set to 500 and mtry to the root of the input characteristics, as recommended in the literature (Duro et al. 2012, pp. 48-50; Belgiu and Drăguţ 2016, p. 25).
+                        <figure>
+                            <img src="../../img/project_FMF/gridsearchRF1.jpg">
+                            <figcaption> 
+                                <strong>Figure 5:</strong> Plot of the gridsearch result with the parameters ntree and mtry. The purity was calculated with the Gini index. 
+                            </figcaption>
+                        </figure>
+                        <figure>
+                            <img src="../../img/project_FMF/gridsearchRF2.jpg">
+                            <figcaption> 
+                                <strong>Figure 6:</strong> Plot of the gridsearch result with the parameters ntree and mtry. The purity was calculated with the entropy.
+                            </figcaption>
+                        </figure>
+                        <h3>4.3 Validation</h3>
+                        In order to be able to make statements about the quality of the classification and thus to answer the question, validation is indispensable. The two most frequently used validation measures in recent years have been the overall accuracy (OA) and the kappa score. However, the Kappa Score has been much criticised and used less frequently in recent years, which is why it is not used in this paper (Heydari and Mountrakis 2018, p. 651). The validation carried out is based on Olofsson et al. 2014, in which stratified random sampling is proposed as the sampling design, which is also used in this work; the procedure for collecting the training and test data has already been described in 4.1.2. Confusion matrices and the validation measures: OA, producer and user accuracies (PA and UA) and estimated area sizes are used to describe the quality of the classifications and their comparison. Finally, these are calculated according to the recommendations of Olofsson et al. 2014 with 95% confidence intervals in order to be able to make statements about the certainty of the validation measures.  
+                        <h2>5. Results</h2>
+                        <figure>
+                            <img src="../../img/project_FMF/classification.jpeg">
+                            <figcaption> 
+                                <strong>Figure 7:</strong> Overview of the classification results and RGB composite of the Sentinel 2A scene.
+                            </figcaption>
+                        </figure>
+                        <figure class="full-width">
+                            <table>
+                                <tr>
+                                    <td colspan="9"class="first-line">Random Forest</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="7">Reference data</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>Class</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                    <td>6</td>
+                                    <td>Total</td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="7">Classification</td>
+                                    <td>1</td>
+                                    <td>61</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>64</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>14</td>
+                                    <td>0</td>
+                                    <td>7</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>23</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>5</td>
+                                    <td>11</td>
+                                    <td>14</td>
+                                    <td>7</td>
+                                    <td>9</td>
+                                    <td>14</td>
+                                    <td>60</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                    <td>44</td>
+                                    <td>11</td>
+                                    <td>1</td>
+                                    <td>67</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>3</td>
+                                    <td>46</td>
+                                    <td>97</td>
+                                    <td>21</td>
+                                    <td>168</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>5</td>
+                                    <td>4</td>
+                                    <td>21</td>
+                                    <td>313</td>
+                                    <td>344</td>
+                                </tr>
+                                <tr class="first-line">
+                                    <td>Total</td>
+                                    <td>72</td>
+                                    <td>30</td>
+                                    <td>27</td>
+                                    <td>109</td>
+                                    <td>139</td>
+                                    <td>349</td>
+                                    <td>726</td>
+                                </tr>
+                            </table>
+                            <figcaption><strong>Table 2:</strong> Confusion matrix from the Random Forest classifier</figcaption>
+                        </figure>
+                        <figure class="full-width">
+                            <table>
+                                <tr>
+                                    <td colspan="9" style="text-align: center;" class="first-line">SVM</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="7" style="text-align: center;">Referenzdaten</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>Class</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                    <td>6</td>
+                                    <td>Total</td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="7" style="text-align: center;">Classification</td>
+                                    <td>1</td>
+                                    <td>62</td>
+                                    <td>0</td>
+                                    <td>2</td>
+                                    <td>0</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>65</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>0</td>
+                                    <td>24</td>
+                                    <td>1</td>
+                                    <td>3</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>28</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>9</td>
+                                    <td>4</td>
+                                    <td>13</td>
+                                    <td>11</td>
+                                    <td>10</td>
+                                    <td>9</td>
+                                    <td>56</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>0</td>
+                                    <td>2</td>
+                                    <td>0</td>
+                                    <td>64</td>
+                                    <td>5</td>
+                                    <td>4</td>
+                                    <td>75</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>6</td>
+                                    <td>29</td>
+                                    <td>100</td>
+                                    <td>17</td>
+                                    <td>153</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>5</td>
+                                    <td>2</td>
+                                    <td>23</td>
+                                    <td>319</td>
+                                    <td>349</td>
+                                </tr>
+                                <tr class="first-line">
+                                    <td>Total</td>
+                                    <td>72</td>
+                                    <td>30</td>
+                                    <td>27</td>
+                                    <td>109</td>
+                                    <td>139</td>
+                                    <td>349</td>
+                                    <td>726</td>
+                                </tr>
+                            </table>
+                            <figcaption><strong>Table 3:</strong> Confusion matrix from the Support Vector Machine classifier</figcaption>
+                        </figure>
+                        <figure class="full-width">
+                            <table>
+                                <tr>
+                                    <td colspan="7" style="text-align: center;" class="first-line">Random Forest</td>
+                                </tr>
+                                <tr>
+                                    <td>Class</td>
+                                    <td>Area</td>
+                                    <td>KI</td>
+                                    <td>PA</td>
+                                    <td>KI</td>
+                                    <td>UA</td>
+                                    <td>KI</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>37,44</td>
+                                    <td>3,4</td>
+                                    <td>86,96</td>
+                                    <td>6,76</td>
+                                    <td>95,31</td>
+                                    <td>5,22</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>11,54</td>
+                                    <td>3,75</td>
+                                    <td>35</td>
+                                    <td>13,07</td>
+                                    <td>60,87</td>
+                                    <td>20,39</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>12,97</td>
+                                    <td>4,66</td>
+                                    <td>45,78</td>
+                                    <td>17,56</td>
+                                    <td>23,33</td>
+                                    <td>10,79</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>56,29</td>
+                                    <td>8</td>
+                                    <td>45,03</td>
+                                    <td>6,86</td>
+                                    <td>65,67</td>
+                                    <td>11,46</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>70,9</td>
+                                    <td>8,95</td>
+                                    <td>69,35</td>
+                                    <td>6,73</td>
+                                    <td>57,74</td>
+                                    <td>7,49</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>181,81</td>
+                                    <td>7,56</td>
+                                    <td>90,56</td>
+                                    <td>2,61</td>
+                                    <td>90,99</td>
+                                    <td>3,03</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Overall accuracy with confidence interval (95%)</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" style="text-align: center;" class="first-line">75,94 % +- 2,73 %</td>
+                                </tr>
+                            </table>
+                            <figcaption><strong>Table 4:</strong> Validation measures and estimated area shares with confidence intervals (95%) of RF.</figcaption>
+                        </figure>
+                        <figure class="full-width">
+                            <table>
+                                <tr>
+                                    <td colspan="7" class="first-line">SVM</td>
+                                </tr>
+                                <tr>
+                                    <td>Class</td>
+                                    <td>Area</td>
+                                    <td>KI</td>
+                                    <td>PA</td>
+                                    <td>KI</td>
+                                    <td>UA</td>
+                                    <td>KI</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>37,63</td>
+                                    <td>3,17</td>
+                                    <td>88,02</td>
+                                    <td>6,15</td>
+                                    <td>95,38</td>
+                                    <td>5,14</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>10,24</td>
+                                    <td>2,48</td>
+                                    <td>72,69</td>
+                                    <td>15,92</td>
+                                    <td>85,71</td>
+                                    <td>13,2</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>12,93</td>
+                                    <td>4,65</td>
+                                    <td>44,4</td>
+                                    <td>17,5</td>
+                                    <td>23,21</td>
+                                    <td>11,16</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>55,18</td>
+                                    <td>6,73</td>
+                                    <td>59,65</td>
+                                    <td>6,84</td>
+                                    <td>85,33</td>
+                                    <td>8,06</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>72,77</td>
+                                    <td>8,53</td>
+                                    <td>73,1</td>
+                                    <td>6,36</td>
+                                    <td>65,36</td>
+                                    <td>7,56</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>182,2</td>
+                                    <td>7,43</td>
+                                    <td>91,73</td>
+                                    <td>2,59</td>
+                                    <td>91,4</td>
+                                    <td>2,96</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Overall accuracy with confidence interval (95%)</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" style="text-align: center;" class="first-line">80,75 % +- 2,54 %</td>
+                                </tr>
+                            </table>
+                            <figcaption><strong>Table 5:</strong> Validation measures and estimated area shares with confidence interval (95%) of SVM.</figcaption>
+                        </figure>
+                        As can be seen in Table 4 & 5, the two classifications differ significantly in their overall accuracy, with the classification using the RF performing significantly worse with 75.94% than the classification using the SVM with 80.75%. Comparing the two confusion matrices (see Table 2) with the addition of the producer and user accuracies (PA and UA), it can be seen (see Table 3) that the two land cover classes volcanic subsoil and forest have a high accuracy in the classification with both RF and SVM.
+                        <figure class="floating-fig-right">
+                            <img src="../../img/project_FMF/Vulkan_Boden_vergleich.png" class="img-float" style="max-width: 300px;">
+                            <figcaption><strong>Figure 8:</strong> Comparison of the volcanic subsurface between the classifications.</figcaption>
+                        </figure>
+                        Among them, no major differences between the classification algorithms used can be observed. It was noticeable that reference pixels of the volcanic subsoil class were increasingly classified as open ground. In marginal areas of the volcanic subsoil, this confusion occurred frequently with both classifications (see Figure 8). The UA and PA of the forest class are similar in both classifications and show high accuracies. Misclassifications occurred repeatedly with the sparse vegetation class in both classifiers. Similar results for the two classifications can also be seen for the class open soil. These show both a low PA and a very low UA. Reference pixels from all other classes were assigned equally to the soil class, so the classification hardly differs from a random assignment. Larger differences between the two classifications can be seen in the agriculture and sparse vegetation class. Here, PA and UA are clearly higher in the classification with the SVM than with the RF.
+                        <figure class="floating-fig-left">
+                            <img src="../../img/project_FMF/Vegetation_Landwirtschaft_vergleich.png" class="img-float" style="max-width: 300px;">
+                            <figcaption><strong>Figure 9:</strong> Comparison of sparse vegetation between classifications.</figcaption>
+                        </figure>
+                        The high number of reference pixels of the agriculture class, which were classified as sparse vegetation, is conspicuous. This phenomenon can be seen in both classifications, but is even more pronounced in the RF, as can be clearly seen in Figure 9. Accordingly, more reference pixels of the Agriculture class have been correctly assigned in the SVM classification. The Settlement Area class shows the greatest differences. The PA in particular is significantly lower in the RF compared to the SVM, which is mainly due to a high number of reference pixels that were assigned to the open land class. 
+                        <figure class="floating-fig-right">
+                            <img src="../../img/project_FMF/Siedlungsflaeche_vergleich.png" class="img-float" style="max-width: 300px;">
+                            <figcaption><strong>Figure 10:</strong> Comparison of settlement area between classifications.</figcaption>
+                        </figure>
+                        Figure 10 shows the special feature. It is also striking that the settlement area was classified more homogeneously with the SVM than with the RF. When looking at the estimated area sizes, it is clearly recognisable that the classes (settlement area and open soil) with the smallest areas provided the lowest accuracies and the highest uncertainties in the form of wide confidence intervals.
+                        <h2>6. Discussion</h2>
+                        A similar land cover analysis by Adam et al. 2014 compared the performance of RF and SVM with multispectral data from the RapidEye satellite. Here, an OA of 93.07% was achieved in the classification with RF and 91.8% with SVM (Adam et al. 2014, pp. 3450-3451). The PA and UA also achieve more than 90% in most classes. The OA achieved in this work in the classification was 75.94% for the RF and 80.75% for the SVM, which is significantly lower than in the comparative analysis. This work also used a significantly lower number of training pixels (Adam et al. 2014, p. 3444). A meta-analysis of 251 papers on the classification of remote sensing images using RF and SVM showed that land cover analyses averaged higher OA (93%) and lower variance when using RF compared to SVM (83%). This was interpreted as superiority of RF over SVM (Sheykhmousa et al. 2020a, p. 6321). Compared to the figures in this paper, the result of the RF in this paper is clearly below average, whereas the SVM is only slightly below average. It can be assumed that most of these works used significantly larger training data than is the case in this work. The answer to this could be found in an analysis by Thanh Noi and Kappas 2018. In this analysis, the influence of the size and distribution of the training areas on the OA in land cover analyses with the machine learning algorithms k-Nearest-Neighbor, SVM and RF was investigated. The result was that SVM provides the highest OA with the lowest sensitivity to the size of the training areas. It was also recommended that training areas should comprise around 0.25% of the study area (Thanh Noi and Kappas 2018, p. 16). The classifiers used in this work were trained with 966 training pixels, which corresponds to 0.02604% of the pixels for 3,709,440 pixels of the Sentinel-2A scene to be classified. Since the training pixels are significantly too low, the SVM achieves a much higher OA than the RF, as the SVM is much less sensitive to low training data (Thanh Noi and Kappas 2018, p. 16). What underlines this statement is that the OA distribution in this work of RF and SVM contradicts the average value in Sheykhmousa et al. 2020a.
+                        <h2>7. Conclusion</h2>
+                        With regard to the question posed at the beginning, which results can be achieved when carrying out a land cover analysis with classification algorithms Random Forest and Support Vector Machine with little training data, it could be shown that with limited training data of 0.02604% of the study area an OA of 75.94% could be achieved with the classification with the RF and an OA of 80.75% with the SVM. The classification with the SVM was able to deliver significantly better results than the RF. This contradicts the average results achieved in land cover analyses, but reinforces the statement that SVM can handle limited training data much better. Especially small and inhomogeneous land cover classes such as open soil and settlement area showed poor results in the validation and were subject to large uncertainties. Especially for the very inhomogeneous class settlement area, a significantly better result was achieved in the classification with the SVM compared to the RF. Large and/or homogeneous classes such as forest and volcanic subsoil were able to provide good classification results. 
+                        <h2>8. Reflection and outlook</h2>
+                        In this analysis, the land cover class open soil shows an accuracy that can hardly be distinguished from a random assignment. It is questionable whether this is due to the choice of land cover class, its ambiguity or the small number of training areas. Especially for these small and inhomogeneous classes, a further investigation into the size of the training samples required for adequate results would be of separate interest. In the future, a consideration of training samples graded in size for the classification of the same scene could be helpful in order to define threshold values above which good results can be obtained. In this way, the required reference data could be reduced to a minimum, which could drastically reduce the costs of land cover analyses.
+                        <h2>9. Bibliography</h2>
+                        <div class="bibliography">
+Adam, Elhadi; Mutanga, Onisimo; Odindi, John; Abdel-Rahman, Elfatih M. (2014): Land-use/cover classification in a heterogeneous coastal landscape using RapidEye imagery: evaluating the performance of random forest and support vector machines classifiers. In: International journal of remote sensing 35 (10), S. 3440–3458.<br>
+Belgiu, Mariana; Drăguţ, Lucian (2016): Random forest in remote sensing: A review of applications and future directions. In: ISPRS Journal of Photogrammetry and Remote Sensing 114, S. 24–31.<br>
+Dabija, Anca; Kluczek, Marcin; Zagajewski, Bogdan; Raczko, Edwin; Kycko, Marlena; Al-Sulttani, Ahmed H. et al. (2021): Comparison of Support Vector Machines and Random Forests for Corine Land Cover Mapping. In: Remote sensing 13 (4), S. 777.<br>
+Duro, Dennis C.; Franklin, Steven E.; Dubé, Monique G. (2012): A comparison of pixel-based and object-based image analysis with selected machine learning algorithms for the classification of agricultural landscapes using SPOT-5 HRG imagery. In: Remote sensing of environment 118, S. 259–272.<br>
+ESA (2021): Level-2. Online verfügbar unter https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi/processing-levels/level-2, zuletzt geprüft am 21.03.21.<br>
+Heydari, Shahriar S.; Mountrakis, Giorgos (2018): Effect of classifier selection, reference sample size, reference class distribution and scene heterogeneity in per-pixel classification accuracy using 26 Landsat sites. In: Remote sensing of environment 204, S. 648–658.<br>
+Kayijamahe, C. B.; Rwanyiziri, G.; Mugabowindekwe, M.; Tuyishimire, J. (2020): Integrating Remote Sensing and GIS to Model Forest Fire Rik in Virunga Massif, Central-Eastern Africa. In: Rwanda Journal of Engineering, Science, Technology and Environment 3 (1).<br>
+Maulik, Ujjwal; Chakraborty, Debasis (2017): Remote Sensing Image Classification: A survey of support-vector-machine-based advanced techniques. In: IEEE Geoscience and Remote Sensing Magazine 5 (1), S. 33–52.<br>
+Mountrakis, Giorgos; Im, Jungho; Ogole, Caesar (2011): Support vector machines in remote sensing: A review. In: ISPRS Journal of Photogrammetry and Remote Sensing 66 (3), S. 247–259.<br>
+Olofsson, Pontus; Foody, Giles M.; Herold, Martin; Stehman, Stephen V.; Woodcock, Curtis E.; Wulder, Michael A. (2014): Good practices for estimating area and assessing accuracy of land change. In: Remote sensing of environment 148, S. 42–57.<br>
+Pal, Mahesh (2005): Random forest classifier for remote sensing classification. In: International journal of remote sensing 26 (1), S. 217–222.<br>
+Segarra, Joel; Buchaillot, Maria Luisa; Araus, Jose Luis; Kefauver, Shawn C. (2020): Remote sensing for precision agriculture: Sentinel-2 improved features and applications. In: Agronomy 10 (5), S. 641.<br>
+Sheykhmousa, Mohammadreza; Mahdianpari, Masoud; Ghanbari, Hamid; Mohammadimanesh, Fariba; Ghamisi, Pedram; Homayouni, Saeid (2020a): Support Vector Machine vs. Random Forest for Remote Sensing Image Classification: A Meta-analysis and systematic review. In: IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing.<br>
+Sheykhmousa, Mohammadreza; Mahdianpari, Masoud; Ghanbari, Hamid; Mohammadimanesh, Fariba; Ghamisi, Pedram; Homayouni, Saeid (2020b): Support Vector Machine vs. Random Forest for Remote Sensing Image Classification: A Meta-analysis and systematic review. In: IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing.<br>
+Thanh Noi, Phan; Kappas, Martin (2018): Comparison of random forest, k-nearest neighbor, and support vector machine classifiers for land cover classification using Sentinel-2 imagery. In: Sensors 18 (1), S. 18.<br>
+van der Werff, Harald; van der Meer, Freek (2016): Sentinel-2A MSI and Landsat 8 OLI provide data continuity for geological remote sensing. In: Remote sensing 8 (11), S. 883.<br>
+Verbeken, Joris; Temmerman, Leen de; Goossens, Rudi; Maeyer, Philippe de; Lavreau, J.: Classification of the vegetation in the Virunga National Park (DR Congo) by integrating past mission reports into Landsat-TM and Terra Aster sensors. In: Proceedings of the 24th EARSeL Symposium ‘New Strategies for European Remote Sensing’, Dubrovnik, Croatia: Citeseer, S. 24–27.<br>
+Zhu, Zhe; Wang, Shixiong; Woodcock, Curtis E. (2015): Improvement and expansion of the Fmask algorithm: Cloud, cloud shadow, and snow detection for Landsats 4–7, 8, and Sentinel 2 images. In: Remote sensing of environment 159, S. 269–277.<br>
+</div>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="left-footer">
+                <h2>About this page</h2>
+                <p>
+                    This is a portfolio page of <a href="mailto:me@moritzlucas.de" class="hover-a-white">Moritz Lucas</a>. 
+                    Here you can see some of his completed <a href="projects.html" class="hover-a-white">works</a>, read <a href="blog.html" class="hover-a-white">articles</a> and can get <a href="mailto:me@moritzlucas.de" class="hover-a-white">in touch</a>.
+                </p>
+            </div>
+            <div class="right-footer">
+                <h2>Formalities</h2>
+                <a href="impressum.html" class="hover-a-white">Impressum</a>
+            </div>
+            <div class="below-footer">
+                <div class="centri">
+                    <div class="btn-con" style="z-index: 10;">
+                        <a href="" class="main-btn">
+                            <span class="btn-text">Download CV</span>
+                            <span class="btn-icon"><i class="fas fa-download"></i></span>
+                        </a>
+                    </div>
+                    <a href="https://github.com/Moerizzy" target="_blank" class="contact-icon">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    
+                    <a href="https://www.linkedin.com/in/moritz-lucas-76797b1a4" target="_blank" class="contact-icon">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="mailto:me@moritzlucas.de" target="_blank" class="contact-icon">
+                        <i class="fas fa-at"></i>
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </footer>
+
+    <div class="controls">
+        <div class="control" data-id="home" >
+            <a href="../../index.html">
+                <i class="fas fa-home"></i>
+            </a>
+        </div>
+        <div class="control" data-id="about">
+            <a href="../about.html">
+                <i class="fas fa-user"></i>
+            </a>
+        </div>
+        <div class="control active-btn" data-id="projects">
+            <a href="../projects.html">
+                <i class="fas fa-book"></i>
+            </a>
+        </div>
+        <div class="control" data-id="blog">
+            <a href="../blog.html">
+                <i class="far fa-newspaper"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="theme-btn">
+        <i class="fas fa-adjust"></i>
+    </div>
+
+    <script src="../../app.js"></script>
+</body>
+</html>
