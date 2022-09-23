@@ -82,7 +82,7 @@
     }
 
     .container{
-        padding: 2rem 2.5rem !important;
+        padding: 1rem 1rem !important;
     }
 
     .about-stats{
@@ -135,6 +135,10 @@
         .icon{
             grid-template-columns: 25px 1fr;
         }
+    }
+    
+    .single-blog-content-con{
+        text-align: left !important;
     }
 
     .img-float{
